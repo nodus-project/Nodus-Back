@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/tutor-backend
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend
 
   deploy:
     name: CD
