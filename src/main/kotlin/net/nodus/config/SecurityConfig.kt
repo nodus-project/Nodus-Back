@@ -26,7 +26,6 @@ class SecurityConfig {
                     "/login/oauth2/**",
                     "/h2-console/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html",
                     "/v3/api-docs/**",
                 ).permitAll()
                     .requestMatchers("/session-logs/**").authenticated()
