@@ -22,3 +22,6 @@ class SessionLogService(
         )
     }
 }
+
+// dashboard/uuid
+// /dashboard  <- 검증을 해서 이  url만 들어오도록 하면 되지

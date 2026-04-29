@@ -21,9 +21,13 @@ class SecurityConfig {
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
+                    "/",
                     "/oauth2/**",
-                    "/login/oauth2**",
-                    "/h2-console/**"
+                    "/login/oauth2/**",
+                    "/h2-console/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**",
                 ).permitAll()
                     .requestMatchers("/session-logs/**").authenticated()
                     .anyRequest().authenticated()
@@ -36,8 +40,9 @@ class SecurityConfig {
             }
             .addFilterBefore(
                 jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter::class.java
+                    UsernamePasswordAuthenticationFilter::class.java
             )
+            .cors {  }
 
         return http.build()
 

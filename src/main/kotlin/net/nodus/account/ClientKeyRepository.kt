@@ -12,3 +12,7 @@ interface ClientKeyRepository : JpaRepository<ClientKey, Long> {
     @Query("SELECT c FROM ClientKey c where c.userAccount.id = :userAccountId")
     fun findFirstByUserAccountId(@Param("userAccountId") userAccountId: UUID): ClientKey?
 }
+
+//user-id (uuid)
+//        user_email
+// user password

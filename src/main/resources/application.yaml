@@ -1,6 +1,13 @@
+server:
+  address: ${SERVER_ADDRESS}
+  port: ${SERVER_PORT}
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: nodus
+
+  forward-headers-strategy: framework
 
   datasource:
     url: jdbc:h2:mem:nodus
