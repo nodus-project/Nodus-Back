@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import java.util.UUID
 
 @Component
 class JwtAuthenticationFilter(
@@ -46,12 +45,12 @@ class JwtAuthenticationFilter(
 
             try {
                 val claims = jwtTokenService.parseClaims(token)
-                val userId = UUID.fromString(claims.subject)
+                val userId = claims.subject
                 val user = userAccountRepository.findByIdOrNull(userId)
 
                 if(user != null && user.id != null) {
                     val principal = AuthUserPrincipal(
-                        id = user.id.toString(),
+                        id = user.id,
                         email = user.email
                     )
 

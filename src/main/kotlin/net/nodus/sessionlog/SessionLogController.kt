@@ -23,8 +23,8 @@ class SessionLogController(
         )
 
         return SessionLogResponse(
-            id = sessionLog.id,
-            clientKeyId = sessionLog.clientKey.id,
+            id = requireNotNull(sessionLog.id),
+            clientKeyId = sessionLog.clientKeyId,
             userSession = sessionLog.userSession,
             createdAt = sessionLog.createdAt.toString()
         )
@@ -40,8 +40,8 @@ data class CreateSessionLogRequest(
 )
 
 data class SessionLogResponse(
-    val id: Long,
-    val clientKeyId: Long,
+    val id: String,
+    val clientKeyId: String,
     val userSession: String,
     val createdAt: String,
 )

@@ -28,7 +28,7 @@ class JwtTokenService(
         val expiresAt = now.plusSeconds(expirationSeconds)
 
         return Jwts.builder()
-            .subject(userId.toString())
+            .subject(userId)
             .claim("email", user.email)
             .claim("name", user.name)
             .issuedAt(Date.from(now))

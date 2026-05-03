@@ -1,12 +1,10 @@
 package net.nodus.account
 
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import org.springframework.data.mongodb.repository.MongoRepository
 
-interface UserAccountRepository : JpaRepository<UserAccount, UUID> {
+interface UserAccountRepository : MongoRepository<UserAccount, String> {
     fun findByProviderAndProviderId(
         provider: OAuthProvider,
         providerId: String,
     ): UserAccount?
-
 }

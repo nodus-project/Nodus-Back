@@ -22,9 +22,9 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers(
                     "/",
+                    "/auth/refresh",
                     "/oauth2/**",
                     "/login/oauth2/**",
-                    "/h2-console/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                 ).permitAll()

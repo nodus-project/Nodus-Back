@@ -2,13 +2,11 @@ package net.nodus.auth
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import jakarta.transaction.Transactional
 import net.nodus.account.ClientKey
 import net.nodus.account.ClientKeyRepository
 import net.nodus.account.OAuthProvider
 import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
@@ -22,13 +20,10 @@ class OAuth2LoginSuccessHandler(
     private val userAccountRepository: UserAccountRepository,
     private val clientKeyRepository: ClientKeyRepository,
     private val jwtTokenService: JwtTokenService,
+    private val refreshTokenService: RefreshTokenService,
     private val objectMapper: ObjectMapper,
-
-    @Value("\${app.oauth2.success-redirect-url:}")
-    private val successRedirectUrl: String,
 ) : AuthenticationSuccessHandler {
 
-    @Transactional
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -39,6 +34,7 @@ class OAuth2LoginSuccessHandler(
         val user = findOrCreateUser(oidcUser)
         val clientKey = findOrCreateClientKey(user)
         val accessToken = jwtTokenService.createAccessToken(user)
+        val refreshToken = refreshTokenService.issue(user)
 
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
@@ -47,6 +43,7 @@ class OAuth2LoginSuccessHandler(
             response.writer,
             OAuthLoginResponse(
                 accessToken = accessToken,
+                refreshToken = refreshToken.token,
                 clientKey = clientKey.key
             )
         )
@@ -66,7 +63,7 @@ class OAuth2LoginSuccessHandler(
         if (existingUser != null) {
             existingUser.email = email
             existingUser.name = name
-            return existingUser
+            return userAccountRepository.save(existingUser)
         }
 
         return userAccountRepository.save(
@@ -96,7 +93,7 @@ class OAuth2LoginSuccessHandler(
 
         return clientKeyRepository.save(
             ClientKey(
-                userAccount = user,
+                userAccountId = userId,
                 key = key
             )
         )
@@ -105,6 +102,7 @@ class OAuth2LoginSuccessHandler(
 
 data class OAuthLoginResponse(
     val accessToken: String,
+    val refreshToken: String,
     val tokenType: String = "Bearer",
     val clientKey: String,
 )

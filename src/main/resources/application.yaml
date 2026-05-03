@@ -9,19 +9,10 @@ spring:
 
   forward-headers-strategy: framework
 
-  datasource:
-    url: jdbc:h2:mem:nodus
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-  h2:
-    console:
-      enabled: true
-
-  jpa:
-    hibernate:
-      ddl-auto: update
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/nodus}
+      auto-index-creation: ${MONGODB_AUTO_INDEX_CREATION:false}
 
   security:
     oauth2:
@@ -38,3 +29,4 @@ spring:
 jwt:
   secret: "dev-secret-key-dev-secret-key-32-bytes!!"
   access-token-expiration-seconds: 3600
+  refresh-token-expiration-seconds: 1209600
