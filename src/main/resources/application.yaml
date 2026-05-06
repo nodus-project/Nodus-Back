@@ -30,3 +30,7 @@ jwt:
   secret: "dev-secret-key-dev-secret-key-32-bytes!!"
   access-token-expiration-seconds: 3600
   refresh-token-expiration-seconds: 1209600
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}

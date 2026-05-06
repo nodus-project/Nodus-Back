@@ -25,7 +25,6 @@ class JwtAuthenticationFilter(
 
         return path.startsWith("/oauth2")
                 || path.startsWith("/login/oauth2")
-
     }
 
     override fun doFilterInternal(
