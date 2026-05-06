@@ -25,6 +25,13 @@ class GoogleOAuthService(
 
     fun login(code: String): OAuthLoginResult {
         val googleAccessToken = exchangeCode(code)
+        val userInfo = fetchUserInfo(googleAccessToken)
+
+        return oAuthLoginService.loginGoogleUser(
+            providerId = userInfo.subject,
+            email = userInfo.email,
+            name = userInfo.name ?: userInfo.email,
+        )
     }
 
     private fun exchangeCode(code: String): String {
