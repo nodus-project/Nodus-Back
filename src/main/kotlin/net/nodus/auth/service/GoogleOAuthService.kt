@@ -1,5 +1,6 @@
 package net.nodus.auth.service
 
+import net.nodus.auth.controller.GoogleOAuthCodeRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -24,8 +25,8 @@ class GoogleOAuthService(
     private val redirectUri: String,
 ) {
 
-    fun login(code: String): OAuthLoginResult {
-        val googleAccessToken = exchangeCode(code)
+    fun login(dto: GoogleOAuthCodeRequest): OAuthLoginResult {
+        val googleAccessToken = exchangeCode(dto)
         val userInfo = fetchUserInfo(googleAccessToken)
 
         return oAuthLoginService.loginGoogleUser(
@@ -35,12 +36,12 @@ class GoogleOAuthService(
         )
     }
 
-    private fun exchangeCode(code: String): String {
+    private fun exchangeCode(dto: GoogleOAuthCodeRequest): String {
         val form = LinkedMultiValueMap<String, String>()
-        form.add("code", code)
+        form.add("code", dto.code)
         form.add("client_id", clientId)
         form.add("client_secret", clientSecret)
-        form.add("redirect_uri", redirectUri)
+        form.add("redirect_uri", dto.redirectUri)
         form.add("grant_type", "authorization_code")
 
         val response = restClient.post()

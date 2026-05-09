@@ -10,7 +10,6 @@ import net.nodus.config.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -49,7 +48,7 @@ class AuthController(
         @Valid @RequestBody request: GoogleOAuthCodeRequest,
         response: HttpServletResponse,
     ): ApiResponse<Void> {
-        val loginResult = googleOAuthService.login(request.code)
+        val loginResult = googleOAuthService.login(request)
 
         val refreshCookie = ResponseCookie.from("refreshToken", loginResult.refreshToken)
             .httpOnly(true)
@@ -82,4 +81,5 @@ data class TokenRefreshResponse(
 data class GoogleOAuthCodeRequest(
     @field:NotBlank
     val code: String,
+    val redirectUri: String,
 )
