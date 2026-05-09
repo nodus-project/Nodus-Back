@@ -1,4 +1,4 @@
-package net.nodus.auth
+package net.nodus.auth.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts

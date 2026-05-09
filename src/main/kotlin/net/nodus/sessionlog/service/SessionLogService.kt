@@ -1,6 +1,8 @@
-package net.nodus.sessionlog
+package net.nodus.sessionlog.service
 
 import net.nodus.account.ClientKeyRepository
+import net.nodus.sessionlog.repository.SessionLog
+import net.nodus.sessionlog.repository.SessionLogRepository
 import org.springframework.stereotype.Service
 
 @Service

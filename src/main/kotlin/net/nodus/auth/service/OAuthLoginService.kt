@@ -1,5 +1,6 @@
-package net.nodus.auth
+package net.nodus.auth.service
 
+import net.nodus.account.ClientKey
 import net.nodus.account.ClientKeyRepository
 import net.nodus.account.OAuthProvider
 import net.nodus.account.UserAccount
@@ -34,7 +35,7 @@ class OAuthLoginService(
         val userId = requireNotNull(user.id)
         val clientKey = clientKeyRepository.findFirstByUserAccountId(userId)
             ?: clientKeyRepository.save(
-                net.nodus.account.ClientKey(
+                ClientKey(
                     userAccountId = userId,
                     key = generateClientKey(),
                 )

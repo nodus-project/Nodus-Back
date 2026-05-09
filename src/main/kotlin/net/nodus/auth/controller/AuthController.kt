@@ -1,8 +1,12 @@
-package net.nodus.auth
+package net.nodus.auth.controller
 
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
+import net.nodus.auth.service.GoogleOAuthService
+import net.nodus.auth.service.JwtTokenService
+import net.nodus.auth.service.RefreshTokenService
+import net.nodus.config.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -21,10 +25,10 @@ class AuthController(
     private val jwtTokenService: JwtTokenService,
     private val googleOAuthService: GoogleOAuthService,
 
-    private val refreshTokenExpirationSeconds: Long,
+    private val refreshTokenExpirationSeconds: Long = 604800L,
 ) {
     @PostMapping("/refresh")
-    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseEntity<TokenRefreshResponse> {
+    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ApiResponse<TokenRefreshResponse> {
         val issuedRefreshToken = try {
             refreshTokenService.rotate(request.refreshToken)
         } catch (_: IllegalArgumentException) {
@@ -32,20 +36,19 @@ class AuthController(
         }
 
         val accessToken = jwtTokenService.createAccessToken(issuedRefreshToken.userAccount)
-
-        return ResponseEntity.ok(
-            TokenRefreshResponse(
-                accessToken = accessToken,
-                refreshToken = issuedRefreshToken.token,
-            )
+        val result = TokenRefreshResponse(
+            accessToken = accessToken,
+            refreshToken = issuedRefreshToken.token,
         )
+
+        return ApiResponse.success(result)
     }
 
     @PostMapping("/oauth2/google/code")
     fun googleCodeLogin(
         @Valid @RequestBody request: GoogleOAuthCodeRequest,
         response: HttpServletResponse,
-    ): ResponseEntity<Void> {
+    ): ApiResponse<Void> {
         val loginResult = googleOAuthService.login(request.code)
 
         val refreshCookie = ResponseCookie.from("refreshToken", loginResult.refreshToken)
@@ -60,7 +63,7 @@ class AuthController(
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
         response.addHeader("X-Client-Key", loginResult.clientKey)
 
-        return ResponseEntity.noContent().build()
+        return ApiResponse.success()
     }
 
 }

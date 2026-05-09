@@ -1,4 +1,4 @@
-package net.nodus.auth
+package net.nodus.auth.service
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import java.lang.IllegalStateException
+import kotlin.collections.get
 
 @Service
 class GoogleOAuthService(
-    restClientBuilder: RestClient.Builder,
+    private var restClient: RestClient,
+
     private val oAuthLoginService: OAuthLoginService,
 
     @Value("\${google.oauth2.client-id}")
@@ -21,7 +23,6 @@ class GoogleOAuthService(
     @Value("\${google.oauth2.redirect-uri}")
     private val redirectUri: String,
 ) {
-     private val restClient = restClientBuilder.build()
 
     fun login(code: String): OAuthLoginResult {
         val googleAccessToken = exchangeCode(code)
