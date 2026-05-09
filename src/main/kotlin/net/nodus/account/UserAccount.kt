@@ -13,7 +13,7 @@ import java.time.Instant
 )
 class UserAccount(
     @Id
-    val id: String? = null,
+    var id: String? = null,
 
     var email: String,
 

@@ -4,8 +4,8 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import net.nodus.auth.service.GoogleOAuthService
-import net.nodus.auth.service.JwtTokenService
-import net.nodus.auth.service.RefreshTokenService
+import net.nodus.auth.service.facade.JwtTokenFacade
+import net.nodus.auth.service.facade.RefreshTokenFacade
 import net.nodus.config.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -20,8 +20,8 @@ import java.time.Duration
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    private val refreshTokenService: RefreshTokenService,
-    private val jwtTokenService: JwtTokenService,
+    private val refreshTokenFacade: RefreshTokenFacade,
+    private val jwtTokenFacade: JwtTokenFacade,
     private val googleOAuthService: GoogleOAuthService,
 
     private val refreshTokenExpirationSeconds: Long = 604800L,
@@ -29,12 +29,12 @@ class AuthController(
     @PostMapping("/refresh")
     fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ApiResponse<TokenRefreshResponse> {
         val issuedRefreshToken = try {
-            refreshTokenService.rotate(request.refreshToken)
+            refreshTokenFacade.rotate(request.refreshToken)
         } catch (_: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token")
         }
 
-        val accessToken = jwtTokenService.createAccessToken(issuedRefreshToken.userAccount)
+        val accessToken = jwtTokenFacade.createAccessToken(issuedRefreshToken.userAccount)
         val result = TokenRefreshResponse(
             accessToken = accessToken,
             refreshToken = issuedRefreshToken.token,

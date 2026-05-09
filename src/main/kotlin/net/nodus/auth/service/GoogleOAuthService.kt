@@ -19,10 +19,7 @@ class GoogleOAuthService(
     private val clientId: String,
 
     @Value("\${google.oauth2.client-secret}")
-    private val clientSecret: String,
-
-    @Value("\${google.oauth2.redirect-uri}")
-    private val redirectUri: String,
+    private val clientSecret: String
 ) {
 
     fun login(dto: GoogleOAuthCodeRequest): OAuthLoginResult {

@@ -7,8 +7,8 @@ import net.nodus.account.ClientKeyRepository
 import net.nodus.account.OAuthProvider
 import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
-import net.nodus.auth.service.JwtTokenService
-import net.nodus.auth.service.RefreshTokenService
+import net.nodus.auth.service.facade.JwtTokenFacade
+import net.nodus.auth.service.facade.RefreshTokenFacade
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
@@ -21,8 +21,8 @@ import java.util.UUID
 class OAuth2LoginSuccessHandler(
     private val userAccountRepository: UserAccountRepository,
     private val clientKeyRepository: ClientKeyRepository,
-    private val jwtTokenService: JwtTokenService,
-    private val refreshTokenService: RefreshTokenService,
+    private val jwtTokenFacade: JwtTokenFacade,
+    private val refreshTokenFacade: RefreshTokenFacade,
     private val objectMapper: ObjectMapper,
 ) : AuthenticationSuccessHandler {
 
@@ -35,8 +35,8 @@ class OAuth2LoginSuccessHandler(
 
         val user = findOrCreateUser(oidcUser)
         val clientKey = findOrCreateClientKey(user)
-        val accessToken = jwtTokenService.createAccessToken(user)
-        val refreshToken = refreshTokenService.issue(user)
+        val accessToken = jwtTokenFacade.createAccessToken(user)
+        val refreshToken = refreshTokenFacade.issue(user)
 
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
