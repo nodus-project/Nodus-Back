@@ -14,6 +14,9 @@ class SessionLog(
     val clientKeyId: String,
 
     @Indexed
+    val siteId: String,
+
+    @Indexed
     val userAccountId: String,
 
     val userSession: String,
