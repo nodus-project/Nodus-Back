@@ -1,18 +1,15 @@
 package net.nodus.auth.service
 
 import net.nodus.auth.controller.GoogleOAuthCodeRequest
+import net.nodus.auth.service.client.GoogleTokenClient
+import net.nodus.auth.service.client.GoogleUserInfoClient
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.client.RestClient
-import java.lang.IllegalStateException
-import kotlin.collections.get
 
 @Service
 class GoogleOAuthService(
-    private var restClient: RestClient,
-
+    private val googleTokenClient: GoogleTokenClient,
+    private val googleUserInfoClient: GoogleUserInfoClient,
     private val oAuthLoginService: OAuthLoginService,
 
     @Value("\${google.oauth2.client-id}")
@@ -34,32 +31,22 @@ class GoogleOAuthService(
     }
 
     private fun exchangeCode(dto: GoogleOAuthCodeRequest): String {
-        val form = LinkedMultiValueMap<String, String>()
-        form.add("code", dto.code)
-        form.add("client_id", clientId)
-        form.add("client_secret", clientSecret)
-        form.add("redirect_uri", dto.redirectUri)
-        form.add("grant_type", "authorization_code")
+        val params = mapOf(
+            "code" to dto.code,
+            "client_id" to clientId,
+            "client_secret" to clientSecret,
+            "redirect_uri" to dto.redirectUri,
+            "grant_type" to "authorization_code"
+        )
 
-        val response = restClient.post()
-            .uri("https://oauth2.googleapis.com/token")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(form)
-            .retrieve()
-            .body(Map::class.java)
-            ?: throw IllegalStateException("Google token response is empty")
+        val response = googleTokenClient.exchangeCode(params)
 
         return response["access_token"] as? String
             ?: throw IllegalStateException("Google access token is missing")
     }
 
     private fun fetchUserInfo(accessToken: String): GoogleUserInfo {
-        val response = restClient.get()
-            .uri("https://openidconnect.googleapis.com/v1/userinfo")
-            .headers { it.setBearerAuth(accessToken) }
-            .retrieve()
-            .body(Map::class.java)
-            ?: throw IllegalStateException("Google user info response is empty")
+        val response = googleUserInfoClient.fetchUserInfo("Bearer $accessToken")
 
         return GoogleUserInfo(
             subject = response["sub"] as String,
@@ -70,7 +57,7 @@ class GoogleOAuthService(
 }
 
 data class GoogleUserInfo(
-    val subject: String,
-    val email: String,
-    val name: String?,
+    var subject: String,
+    var email: String,
+    var name: String?,
 )

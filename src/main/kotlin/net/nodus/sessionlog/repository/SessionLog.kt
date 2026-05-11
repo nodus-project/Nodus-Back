@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
 @Document(collection = "session_logs")
-class SessionLog(
+class SessionLog (
     @Id
     val id: String? = null,
 
