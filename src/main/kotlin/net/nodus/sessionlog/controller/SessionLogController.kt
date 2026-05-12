@@ -3,7 +3,7 @@ package net.nodus.sessionlog.controller
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import net.nodus.config.ApiResponse
-import net.nodus.sessionlog.service.SessionLogService
+import net.nodus.sessionlog.SessionLogService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

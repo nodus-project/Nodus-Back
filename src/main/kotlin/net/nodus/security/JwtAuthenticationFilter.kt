@@ -47,9 +47,9 @@ class JwtAuthenticationFilter(
                 val userId = claims.subject
                 val user = userAccountRepository.findByIdOrNull(userId)
 
-                if(user != null && user.id != null) {
+                user?.id?.let { safeId ->
                     val principal = AuthUserPrincipal(
-                        id = user.id,
+                        id = safeId,
                         email = user.email
                     )
 

@@ -1,6 +1,8 @@
 package net.nodus.sessionlog
 
-import net.nodus.site.SiteKeyService
+import net.nodus.account.ClientKeyRepository
+import net.nodus.sessionlog.repository.SessionLog
+import net.nodus.sessionlog.repository.SessionLogRepository
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,6 +17,7 @@ class SessionLogService(
         return sessionLogRepository.save(
             SessionLog(
                 clientKeyId = requireNotNull(key.id),
+                siteId = "mock",
                 userAccountId = key.userAccountId,
                 userSession = userSession,
             )
