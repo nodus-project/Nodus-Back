@@ -35,7 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/*
-!.vscode/launch.json
+.vscode/launch.json
 
 ### Kotlin ###
 .kotlin
