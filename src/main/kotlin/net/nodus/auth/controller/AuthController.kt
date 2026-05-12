@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank
 import net.nodus.auth.service.GoogleOAuthService
 import net.nodus.auth.service.JwtTokenService
 import net.nodus.auth.service.RefreshTokenService
+import net.nodus.config.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
