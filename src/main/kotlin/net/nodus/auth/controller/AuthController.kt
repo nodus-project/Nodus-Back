@@ -25,7 +25,7 @@ class AuthController(
     private val jwtTokenService: JwtTokenService,
     private val googleOAuthService: GoogleOAuthService,
 
-    private val refreshTokenExpirationSeconds: Long,
+    private val refreshTokenExpirationSeconds: Long = 60 * 60 * 24 * 7 * 4 // 임의 값임 바꾸고 싶음 바꿔도 댕
 ) {
     @PostMapping("/refresh")
     fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseEntity<TokenRefreshResponse> {
