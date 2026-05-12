@@ -24,10 +24,10 @@ class SiteController(
     fun create(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @Valid @RequestBody request: CreateSiteRequest,
-    ): SiteResponse {
+    ): ApiResponse<SiteResponse> {
         val result = siteService.create(user.id, request)
 
-        return SiteResponse(
+        return ApiResponse.success(SiteResponse(
             id = requireNotNull(result.site.id),
             name = result.site.name,
             domain = result.site.domain,
@@ -39,48 +39,49 @@ class SiteController(
     @GetMapping
     fun list(
         @AuthenticationPrincipal user: AuthUserPrincipal,
-    ): List<SiteResponse> =
-        siteService.list(user.id).map { it.toResponse()  }
+    ): ApiResponse<List<SiteResponse>> =
+        ApiResponse.success(siteService.list(user.id).map { it.toResponse() })
 
     @GetMapping("/siteId")
     fun get(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
-    ): SiteResponse =
-        siteService.get(user.id, siteId).toResponse()
+    ): ApiResponse<SiteResponse> =
+        ApiResponse.success(siteService.get(user.id, siteId).toResponse())
 
     @PatchMapping("/{siteId}")
     fun update(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
         @RequestBody request: UpdateSiteRequest,
-    ): SiteResponse =
-        siteService.update(user.id, siteId, request).toResponse()
+    ): ApiResponse<SiteResponse> =
+        ApiResponse.success(siteService.update(user.id, siteId, request).toResponse())
 
     @DeleteMapping("/{siteId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
-    ) {
+    ): ApiResponse<Void> {
         siteService.delete(user.id, siteId)
+        return ApiResponse.success()
     }
 
     @GetMapping("/{siteId}/key")
     fun keyInfo(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
-    ): SiteKeyResponse =
-        siteService.keyInfo(user.id, siteId).toResponse()
+    ): ApiResponse<SiteKeyResponse> =
+        ApiResponse.success(siteService.keyInfo(user.id, siteId).toResponse())
 
     @PostMapping("/{siteId}/key/rotate")
     fun rotateKey(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
-    ): SiteKeyResponse {
+    ): ApiResponse<SiteKeyResponse> {
         val issuedKey = siteService.rotateKey(user.id, siteId)
 
-        return SiteKeyResponse(
+        return ApiResponse.success(SiteKeyResponse(
             keyId = requireNotNull(issuedKey.siteKey.id),
             keyPrefix = issuedKey.siteKey.keyPrefix,
             clientKey = issuedKey.rawKey,
@@ -93,22 +94,23 @@ class SiteController(
     fun revokeKey(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
-    ) {
+    ): ApiResponse<Void> {
         siteService.revokeKey(user.id, siteId)
+        return ApiResponse.success()
     }
 
-    private fun Site.toResponse(): SiteResponse =
-        SiteResponse(
+    private fun Site.toResponse(): ApiResponse<SiteResponse> =
+        return ApiResponse.success(SiteResponse(
             id = requireNotNull(id),
             name = name,
             domain = domain,
             url = url,
-        )
+        ))
 
-    private fun SiteKey.toResponse(): SiteKeyResponse =
-        SiteKeyResponse(
+    private fun SiteKey.toResponse(): ApiResponse<SiteKeyResponse> =
+        return ApiResponse.success(SiteKeyResponse(
             keyId = requireNotNull(id),
             keyPrefix = keyPrefix,
             status = status,
-        )
+        ))
 }
