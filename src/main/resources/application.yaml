@@ -12,7 +12,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/nodus}
-      auto-index-creation: ${MONGODB_AUTO_INDEX_CREATION:false}
+      auto-index-creation: true
 
   security:
     oauth2:
@@ -35,7 +35,6 @@ google:
   oauth2:
     client-id: ${GOOGLE_CLIENT_ID}
     client-secret: ${GOOGLE_CLIENT_SECRET}
-    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:3000}
 
 app:
   cors:

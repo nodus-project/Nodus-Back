@@ -3,7 +3,10 @@ package net.nodus.auth
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
-import org.springframework.beans.factory.annotation.Value
+import net.nodus.auth.service.GoogleOAuthService
+import net.nodus.auth.service.JwtTokenService
+import net.nodus.auth.service.RefreshTokenService
+import net.nodus.config.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
@@ -22,7 +25,6 @@ class AuthController(
     private val jwtTokenService: JwtTokenService,
     private val googleOAuthService: GoogleOAuthService,
 
-    @Value("\${jwt.refresh-token-expiration-seconds}")
     private val refreshTokenExpirationSeconds: Long,
 ) {
     @PostMapping("/refresh")
@@ -47,8 +49,8 @@ class AuthController(
     fun googleCodeLogin(
         @Valid @RequestBody request: GoogleOAuthCodeRequest,
         response: HttpServletResponse,
-    ): ResponseEntity<Void> {
-        val loginResult = googleOAuthService.login(request.code)
+    ): ApiResponse<Void> {
+        val loginResult = googleOAuthService.login(request)
 
         val refreshCookie = ResponseCookie.from("refreshToken", loginResult.refreshToken)
             .httpOnly(true)
@@ -62,7 +64,7 @@ class AuthController(
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
         response.addHeader("X-Client-Key", loginResult.clientKey)
 
-        return ResponseEntity.noContent().build()
+        return ApiResponse.success()
     }
 
 }
@@ -81,4 +83,5 @@ data class TokenRefreshResponse(
 data class GoogleOAuthCodeRequest(
     @field:NotBlank
     val code: String,
+    val redirectUri: String,
 )

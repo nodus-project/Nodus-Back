@@ -1,7 +1,9 @@
-package net.nodus.sessionlog
+package net.nodus.sessionlog.controller
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
+import net.nodus.config.ApiResponse
+import net.nodus.sessionlog.SessionLogService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -16,18 +18,20 @@ class SessionLogController(
 ) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@Valid @RequestBody request: CreateSessionLogRequest): SessionLogResponse {
+    fun create(@Valid @RequestBody request: CreateSessionLogRequest): ApiResponse<SessionLogResponse> {
         val sessionLog = sessionLogService.create(
             clientKey = request.clientKey,
             userSession = request.userSession,
         )
 
-        return SessionLogResponse(
+        val result = SessionLogResponse(
             id = requireNotNull(sessionLog.id),
             clientKeyId = sessionLog.clientKeyId,
             userSession = sessionLog.userSession,
             createdAt = sessionLog.createdAt.toString()
         )
+
+        return ApiResponse.success(result)
     }
 }
 

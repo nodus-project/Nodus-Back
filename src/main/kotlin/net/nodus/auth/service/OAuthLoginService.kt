@@ -1,5 +1,6 @@
-package net.nodus.auth
+package net.nodus.auth.service
 
+import net.nodus.account.ClientKey
 import net.nodus.account.ClientKeyRepository
 import net.nodus.account.OAuthProvider
 import net.nodus.account.UserAccount
@@ -11,17 +12,13 @@ import java.util.UUID
 class OAuthLoginService(
     private val userAccountRepository: UserAccountRepository,
     private val clientKeyRepository: ClientKeyRepository,
+
     private val jwtTokenService: JwtTokenService,
     private val refreshTokenService: RefreshTokenService,
 ) {
 
     fun loginGoogleUser(providerId: String, email: String, name: String): OAuthLoginResult {
         val user = userAccountRepository.findByProviderAndProviderId(OAuthProvider.GOOGLE, providerId)
-            ?.also {
-                it.email = email
-                it.name = name
-            }
-            ?.let { userAccountRepository.save(it) }
             ?: userAccountRepository.save(
                 UserAccount(
                     email = email,
@@ -31,15 +28,7 @@ class OAuthLoginService(
                 )
             )
 
-        val userId = requireNotNull(user.id)
-        val clientKey = clientKeyRepository.findFirstByUserAccountId(userId)
-            ?: clientKeyRepository.save(
-                net.nodus.account.ClientKey(
-                    userAccountId = userId,
-                    key = generateClientKey(),
-                )
-            )
-
+        val clientKey = getClientKey(user)
         val refreshToken = refreshTokenService.issue(user)
 
         return OAuthLoginResult(
@@ -47,6 +36,18 @@ class OAuthLoginService(
             refreshToken = refreshToken.token,
             clientKey = clientKey.key,
         )
+    }
+
+    private fun getClientKey(user: UserAccount): ClientKey {
+        val userId = requireNotNull(user.id)
+        val clientKey = clientKeyRepository.findFirstByUserAccountId(userId)
+            ?: clientKeyRepository.save(
+                ClientKey(
+                    userAccountId = userId,
+                    key = generateClientKey(),
+                )
+            )
+        return clientKey
     }
 
     private fun generateClientKey(): String {

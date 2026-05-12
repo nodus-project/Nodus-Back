@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import net.nodus.account.UserAccountRepository
-import net.nodus.auth.JwtTokenService
+import net.nodus.auth.service.JwtTokenService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -47,9 +47,9 @@ class JwtAuthenticationFilter(
                 val userId = claims.subject
                 val user = userAccountRepository.findByIdOrNull(userId)
 
-                if(user != null && user.id != null) {
+                user?.id?.let { safeId ->
                     val principal = AuthUserPrincipal(
-                        id = user.id,
+                        id = safeId,
                         email = user.email
                     )
 

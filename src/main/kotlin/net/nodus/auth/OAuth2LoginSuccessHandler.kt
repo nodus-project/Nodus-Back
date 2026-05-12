@@ -7,11 +7,13 @@ import net.nodus.account.ClientKeyRepository
 import net.nodus.account.OAuthProvider
 import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
+import net.nodus.auth.service.JwtTokenService
+import net.nodus.auth.service.RefreshTokenService
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Component
-import tools.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.lang.IllegalStateException
 import java.util.UUID
 
