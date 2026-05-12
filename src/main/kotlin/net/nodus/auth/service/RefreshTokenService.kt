@@ -1,4 +1,4 @@
-package net.nodus.auth.service.facade
+package net.nodus.auth.service
 
 import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
@@ -13,7 +13,7 @@ import java.time.Instant
 import java.util.Base64
 
 @Facade
-class RefreshTokenFacade(
+class RefreshTokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val userAccountRepository: UserAccountRepository,
 

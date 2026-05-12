@@ -1,5 +1,6 @@
 package net.nodus.auth.service
 
+import net.nodus.auth.GoogleOAuthCodeRequest
 import net.nodus.auth.controller.GoogleOAuthCodeRequest
 import net.nodus.auth.service.client.GoogleTokenClient
 import net.nodus.auth.service.client.GoogleUserInfoClient

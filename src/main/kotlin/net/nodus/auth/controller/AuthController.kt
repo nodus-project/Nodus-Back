@@ -1,15 +1,15 @@
-package net.nodus.auth.controller
+package net.nodus.auth
 
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import net.nodus.auth.service.GoogleOAuthService
-import net.nodus.auth.service.facade.JwtTokenFacade
-import net.nodus.auth.service.facade.RefreshTokenFacade
-import net.nodus.config.ApiResponse
+import net.nodus.auth.service.JwtTokenService
+import net.nodus.auth.service.RefreshTokenService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,27 +20,28 @@ import java.time.Duration
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    private val refreshTokenFacade: RefreshTokenFacade,
-    private val jwtTokenFacade: JwtTokenFacade,
+    private val refreshTokenService: RefreshTokenService,
+    private val jwtTokenService: JwtTokenService,
     private val googleOAuthService: GoogleOAuthService,
 
-    private val refreshTokenExpirationSeconds: Long = 604800L,
+    private val refreshTokenExpirationSeconds: Long,
 ) {
     @PostMapping("/refresh")
-    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ApiResponse<TokenRefreshResponse> {
+    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseEntity<TokenRefreshResponse> {
         val issuedRefreshToken = try {
-            refreshTokenFacade.rotate(request.refreshToken)
+            refreshTokenService.rotate(request.refreshToken)
         } catch (_: IllegalArgumentException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token")
         }
 
-        val accessToken = jwtTokenFacade.createAccessToken(issuedRefreshToken.userAccount)
-        val result = TokenRefreshResponse(
-            accessToken = accessToken,
-            refreshToken = issuedRefreshToken.token,
-        )
+        val accessToken = jwtTokenService.createAccessToken(issuedRefreshToken.userAccount)
 
-        return ApiResponse.success(result)
+        return ResponseEntity.ok(
+            TokenRefreshResponse(
+                accessToken = accessToken,
+                refreshToken = issuedRefreshToken.token,
+            )
+        )
     }
 
     @PostMapping("/oauth2/google/code")

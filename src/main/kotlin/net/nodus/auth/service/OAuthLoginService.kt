@@ -5,10 +5,7 @@ import net.nodus.account.ClientKeyRepository
 import net.nodus.account.OAuthProvider
 import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
-import net.nodus.auth.service.facade.JwtTokenFacade
-import net.nodus.auth.service.facade.RefreshTokenFacade
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
@@ -16,8 +13,8 @@ class OAuthLoginService(
     private val userAccountRepository: UserAccountRepository,
     private val clientKeyRepository: ClientKeyRepository,
 
-    private val jwtTokenFacade: JwtTokenFacade,
-    private val refreshTokenFacade: RefreshTokenFacade,
+    private val jwtTokenService: JwtTokenService,
+    private val refreshTokenService: RefreshTokenService,
 ) {
 
     fun loginGoogleUser(providerId: String, email: String, name: String): OAuthLoginResult {
@@ -32,10 +29,10 @@ class OAuthLoginService(
             )
 
         val clientKey = getClientKey(user)
-        val refreshToken = refreshTokenFacade.issue(user)
+        val refreshToken = refreshTokenService.issue(user)
 
         return OAuthLoginResult(
-            accessToken = jwtTokenFacade.createAccessToken(user),
+            accessToken = jwtTokenService.createAccessToken(user),
             refreshToken = refreshToken.token,
             clientKey = clientKey.key,
         )

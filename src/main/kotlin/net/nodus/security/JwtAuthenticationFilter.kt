@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import net.nodus.account.UserAccountRepository
-import net.nodus.auth.service.facade.JwtTokenFacade
+import net.nodus.auth.service.JwtTokenService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtTokenFacade: JwtTokenFacade,
+    private val jwtTokenService: JwtTokenService,
     private val userAccountRepository: UserAccountRepository
 ) : OncePerRequestFilter() {
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
@@ -43,7 +43,7 @@ class JwtAuthenticationFilter(
             val token = authorization.removePrefix("Bearer ").trim()
 
             try {
-                val claims = jwtTokenFacade.parseClaims(token)
+                val claims = jwtTokenService.parseClaims(token)
                 val userId = claims.subject
                 val user = userAccountRepository.findByIdOrNull(userId)
 

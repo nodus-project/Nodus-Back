@@ -1,4 +1,4 @@
-package net.nodus.auth.service.facade
+package net.nodus.auth.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -11,7 +11,7 @@ import java.util.Date
 import javax.crypto.SecretKey
 
 @Facade
-class JwtTokenFacade(
+class JwtTokenService(
     @Value("\${jwt.secret}")
     private val secret: String,
 
