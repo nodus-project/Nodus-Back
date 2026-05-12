@@ -1,6 +1,7 @@
 package net.nodus.site
 
 import jakarta.validation.Valid
+import net.nodus.config.ApiResponse
 import net.nodus.security.AuthUserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -27,12 +28,14 @@ class SiteController(
     ): ApiResponse<SiteResponse> {
         val result = siteService.create(user.id, request)
 
-        return ApiResponse.success(SiteResponse(
-            id = requireNotNull(result.site.id),
-            name = result.site.name,
-            domain = result.site.domain,
-            url = result.site.url,
-            clientKey = result.issuedKey.rawKey,
+        return ApiResponse.success(
+            SiteResponse(
+                id = requireNotNull(result.site.id),
+                name = result.site.name,
+                domain = result.site.domain,
+                url = result.site.url,
+                clientKey = result.issuedKey.rawKey,
+            ),
         )
     }
 
@@ -42,7 +45,7 @@ class SiteController(
     ): ApiResponse<List<SiteResponse>> =
         ApiResponse.success(siteService.list(user.id).map { it.toResponse() })
 
-    @GetMapping("/siteId")
+    @GetMapping("/{siteId}")
     fun get(
         @AuthenticationPrincipal user: AuthUserPrincipal,
         @PathVariable siteId: String,
@@ -81,11 +84,13 @@ class SiteController(
     ): ApiResponse<SiteKeyResponse> {
         val issuedKey = siteService.rotateKey(user.id, siteId)
 
-        return ApiResponse.success(SiteKeyResponse(
-            keyId = requireNotNull(issuedKey.siteKey.id),
-            keyPrefix = issuedKey.siteKey.keyPrefix,
-            clientKey = issuedKey.rawKey,
-            status = issuedKey.siteKey.status,
+        return ApiResponse.success(
+            SiteKeyResponse(
+                keyId = requireNotNull(issuedKey.siteKey.id),
+                keyPrefix = issuedKey.siteKey.keyPrefix,
+                clientKey = issuedKey.rawKey,
+                status = issuedKey.siteKey.status,
+            ),
         )
     }
 
@@ -99,18 +104,18 @@ class SiteController(
         return ApiResponse.success()
     }
 
-    private fun Site.toResponse(): ApiResponse<SiteResponse> =
-        return ApiResponse.success(SiteResponse(
+    private fun Site.toResponse(): SiteResponse =
+        SiteResponse(
             id = requireNotNull(id),
             name = name,
             domain = domain,
             url = url,
-        ))
+        )
 
-    private fun SiteKey.toResponse(): ApiResponse<SiteKeyResponse> =
-        return ApiResponse.success(SiteKeyResponse(
+    private fun SiteKey.toResponse(): SiteKeyResponse =
+        SiteKeyResponse(
             keyId = requireNotNull(id),
             keyPrefix = keyPrefix,
             status = status,
-        ))
+        )
 }
