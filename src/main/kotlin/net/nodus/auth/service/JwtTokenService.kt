@@ -4,13 +4,13 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import net.nodus.account.UserAccount
-import net.nodus.config.annotation.Facade
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.Date
 import javax.crypto.SecretKey
 
-@Facade
+@Service
 class JwtTokenService(
     @Value("\${jwt.secret}")
     private val secret: String,

@@ -4,15 +4,15 @@ import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
 import net.nodus.auth.repository.RefreshToken
 import net.nodus.auth.repository.RefreshTokenRepository
-import net.nodus.config.annotation.Facade
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.Base64
 
-@Facade
+@Service
 class RefreshTokenService(
     private val refreshTokenRepository: RefreshTokenRepository,
     private val userAccountRepository: UserAccountRepository,
