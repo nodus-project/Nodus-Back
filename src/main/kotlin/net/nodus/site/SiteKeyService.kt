@@ -1,5 +1,9 @@
 package net.nodus.site
 
+import net.nodus.config.exception.GlobalException
+import net.nodus.site.dto.IssuedSiteKey
+import net.nodus.site.entity.Site
+import net.nodus.site.entity.SiteKey
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.security.SecureRandom
@@ -25,6 +29,8 @@ class SiteKeyService(
                 siteId = siteId,
                 keyPrefix = rawKey.take(KEY_PREFIX_LENGTH),
                 keyHash = requireNotNull(passwordEncoder.encode(rawKey)),
+                workspaceId = site.workspaceId,
+                projectId = site.projectId,
             )
         )
 
@@ -42,12 +48,12 @@ class SiteKeyService(
 
         val siteKey = candidates.firstOrNull {
             passwordEncoder.matches(rawKey, it.keyHash)
-        } ?: throw IllegalArgumentException("Invalid client key")
+        } ?: throw GlobalException.Unauthorized("Invalid key")
 
         siteRepository.findByIdAndUserAccountIdAndDeletedAtIsNull(
             id = siteKey.siteId,
             userAccountId = siteKey.userAccountId,
-        ) ?: throw IllegalArgumentException("Site not found")
+        ) ?: throw GlobalException.DataNotFound("Site not found")
 
         return siteKey
     }

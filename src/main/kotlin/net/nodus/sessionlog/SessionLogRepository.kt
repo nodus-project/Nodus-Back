@@ -1,4 +1,4 @@
-package net.nodus.sessionlog.repository
+package net.nodus.sessionlog
 
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository

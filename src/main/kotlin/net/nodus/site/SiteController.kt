@@ -3,6 +3,11 @@ package net.nodus.site
 import jakarta.validation.Valid
 import net.nodus.config.ApiResponse
 import net.nodus.security.AuthUserPrincipal
+import net.nodus.site.dto.CreateSiteRequest
+import net.nodus.site.dto.SiteKeyResponse
+import net.nodus.site.dto.SiteResponse
+import net.nodus.site.dto.UpdateSiteRequest
+import net.nodus.site.dto.toResponse
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -42,8 +48,9 @@ class SiteController(
     @GetMapping
     fun list(
         @AuthenticationPrincipal user: AuthUserPrincipal,
+        @RequestParam projectId: String,
     ): ApiResponse<List<SiteResponse>> =
-        ApiResponse.success(siteService.list(user.id).map { it.toResponse() })
+        ApiResponse.success(siteService.list(user.id, projectId).map { it.toResponse() })
 
     @GetMapping("/{siteId}")
     fun get(
@@ -103,19 +110,4 @@ class SiteController(
         siteService.revokeKey(user.id, siteId)
         return ApiResponse.success()
     }
-
-    private fun Site.toResponse(): SiteResponse =
-        SiteResponse(
-            id = requireNotNull(id),
-            name = name,
-            domain = domain,
-            url = url,
-        )
-
-    private fun SiteKey.toResponse(): SiteKeyResponse =
-        SiteKeyResponse(
-            keyId = requireNotNull(id),
-            keyPrefix = keyPrefix,
-            status = status,
-        )
 }

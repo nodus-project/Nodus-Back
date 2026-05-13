@@ -2,8 +2,8 @@ package net.nodus.auth.service
 
 import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
-import net.nodus.auth.repository.RefreshToken
-import net.nodus.auth.repository.RefreshTokenRepository
+import net.nodus.auth.RefreshToken
+import net.nodus.auth.RefreshTokenRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

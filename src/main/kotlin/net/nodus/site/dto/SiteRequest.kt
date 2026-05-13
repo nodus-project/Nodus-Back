@@ -1,8 +1,11 @@
-package net.nodus.site
+package net.nodus.site.dto
 
 import jakarta.validation.constraints.NotBlank
 
 data class CreateSiteRequest(
+    @field:NotBlank
+    val projectId: String,
+
     @field:NotBlank
     val name: String,
 

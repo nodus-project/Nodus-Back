@@ -1,5 +1,6 @@
-package net.nodus.site
+package net.nodus.site.entity
 
+import net.nodus.site.SiteKeyStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.index.Indexed
@@ -16,6 +17,12 @@ import java.time.Instant
 class SiteKey (
     @Id
     val id: String? = null,
+
+    @Indexed
+    val workspaceId: String,
+
+    @Indexed
+    val projectId: String,
 
     @Indexed
     val userAccountId: String,

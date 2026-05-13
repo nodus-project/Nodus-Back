@@ -1,4 +1,4 @@
-package net.nodus.auth.repository
+package net.nodus.auth
 
 import org.springframework.data.mongodb.repository.MongoRepository
 

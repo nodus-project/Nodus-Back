@@ -1,4 +1,4 @@
-package net.nodus.sessionlog.repository
+package net.nodus.sessionlog
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
@@ -12,6 +12,12 @@ class SessionLog (
 
     @Indexed
     val clientKeyId: String,
+
+    @Indexed
+    val workspaceId: String,
+
+    @Indexed
+    val projectId: String,
 
     @Indexed
     val siteId: String,

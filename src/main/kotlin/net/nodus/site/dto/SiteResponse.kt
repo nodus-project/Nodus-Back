@@ -1,4 +1,8 @@
-package net.nodus.site
+package net.nodus.site.dto
+
+import net.nodus.site.SiteKeyStatus
+import net.nodus.site.entity.Site
+import net.nodus.site.entity.SiteKey
 
 data class SiteResponse(
     val id: String,
@@ -24,3 +28,18 @@ data class IssuedSiteKey(
     val siteKey: SiteKey,
     val rawKey: String,
 )
+
+fun Site.toResponse(): SiteResponse =
+    SiteResponse(
+        id = requireNotNull(id),
+        name = name,
+        domain = domain,
+        url = url,
+    )
+
+fun SiteKey.toResponse(): SiteKeyResponse =
+    SiteKeyResponse(
+        keyId = requireNotNull(id),
+        keyPrefix = keyPrefix,
+        status = status,
+    )
