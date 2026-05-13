@@ -2,8 +2,10 @@ package net.nodus.project
 
 import net.nodus.config.exception.GlobalException
 import net.nodus.workspace.WorkspaceService
+import org.springframework.stereotype.Service
 import java.time.Instant
 
+@Service
 class ProjectService(
     private val projectRepository: ProjectRepository,
     private val workspaceService: WorkspaceService
