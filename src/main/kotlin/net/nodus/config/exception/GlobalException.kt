@@ -31,4 +31,34 @@ sealed class GlobalException(
         message: String = "접근 권한이 없습니다.",
         errorCode: ErrorCode = ErrorCode.FORBIDDEN,
     ) : GlobalException(message, errorCode)
+
+    class Duplicated(
+        message: String = "이미 존재하는 엔티티입니다.",
+        errorCode: ErrorCode = ErrorCode.DUPLICATED,
+    ): GlobalException(message, errorCode)
+
+    class DataExpired(
+        message: String = "만료된 데이터입니다.",
+        errorCode: ErrorCode = ErrorCode.DATA_EXPIRED,
+    ): GlobalException(message, errorCode)
+
+    class DataIntegrityViolation(
+        message: String = "데이터 제약 조건을 위반했습니다.",
+        errorCode: ErrorCode = ErrorCode.DATA_INTEGRITY_VIOLATION,
+    ): GlobalException(message, errorCode)
+
+    class ExternalApiFailed(
+        message: String = "외부 API 호출에 실패했습니다.",
+        errorCode: ErrorCode = ErrorCode.EXTERNAL_API_FAILED,
+    ): GlobalException(message, errorCode)
+
+    class NotImplemented(
+        message: String = "구현되지 않은 기능입니다.",
+        errorCode: ErrorCode = ErrorCode.NOT_IMPLEMENTED,
+    ): GlobalException(message, errorCode)
+
+    class ServiceUnavailable(
+        message: String = "서비스를 이용할 수 없습니다.",
+        errorCode: ErrorCode = ErrorCode.SERVICE_UNAVAILABLE,
+    ): GlobalException(message, errorCode)
 }

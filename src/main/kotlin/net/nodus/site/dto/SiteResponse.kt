@@ -9,13 +9,13 @@ data class SiteResponse(
     val name: String,
     val domain: String?,
     val url: String?,
-    val clientKey: String? = null
+    val siteKey: String? = null
 )
 
 data class SiteKeyResponse(
     val keyId: String,
     val keyPrefix: String,
-    val clientKey: String? = null,
+    val siteKey: String? = null,
     val status: SiteKeyStatus,
 )
 

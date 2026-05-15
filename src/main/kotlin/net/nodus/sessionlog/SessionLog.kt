@@ -11,7 +11,7 @@ class SessionLog (
     val id: String? = null,
 
     @Indexed
-    val clientKeyId: String,
+    val siteKeyId: String,
 
     @Indexed
     val workspaceId: String,

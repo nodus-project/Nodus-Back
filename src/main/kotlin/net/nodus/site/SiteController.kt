@@ -40,7 +40,7 @@ class SiteController(
                 name = result.site.name,
                 domain = result.site.domain,
                 url = result.site.url,
-                clientKey = result.issuedKey.rawKey,
+                siteKey = result.issuedKey.rawKey,
             ),
         )
     }
@@ -95,7 +95,7 @@ class SiteController(
             SiteKeyResponse(
                 keyId = requireNotNull(issuedKey.siteKey.id),
                 keyPrefix = issuedKey.siteKey.keyPrefix,
-                clientKey = issuedKey.rawKey,
+                siteKey = issuedKey.rawKey,
                 status = issuedKey.siteKey.status,
             ),
         )

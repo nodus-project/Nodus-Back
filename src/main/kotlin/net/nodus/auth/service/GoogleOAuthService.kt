@@ -3,6 +3,7 @@ package net.nodus.auth.service
 import net.nodus.auth.GoogleOAuthCodeRequest
 import net.nodus.auth.service.client.GoogleTokenClient
 import net.nodus.auth.service.client.GoogleUserInfoClient
+import net.nodus.config.exception.GlobalException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -42,7 +43,7 @@ class GoogleOAuthService(
         val response = googleTokenClient.exchangeCode(params)
 
         return response["access_token"] as? String
-            ?: throw IllegalStateException("Google access token is missing")
+            ?: throw GlobalException.ExternalApiFailed("Google access token is missing")
     }
 
     private fun fetchUserInfo(accessToken: String): GoogleUserInfo {

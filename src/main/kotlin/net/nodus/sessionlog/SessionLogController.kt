@@ -18,7 +18,7 @@ class SessionLogController(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody request: CreateSessionLogRequest): ApiResponse<SessionLogResponse> {
-        val sessionLog = sessionLogService.create(request.clientKey, request.userSession)
+        val sessionLog = sessionLogService.create(request.siteKey, request.userSession)
 
        return ApiResponse.success(sessionLog.toResponse())
     }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 
 data class CreateSessionLogRequest(
     @field:NotBlank
-    val clientKey: String,
+    val siteKey: String,
 
     @field:NotBlank
     val userSession: String,
@@ -12,7 +12,7 @@ data class CreateSessionLogRequest(
 
 data class SessionLogResponse(
     val id: String,
-    val clientKeyId: String,
+    val siteKeyId: String,
     val userAccountId: String,
     val workspaceId: String,
     val projectId: String,
@@ -24,7 +24,7 @@ data class SessionLogResponse(
 fun SessionLog.toResponse(): SessionLogResponse =
     SessionLogResponse(
         id = requireNotNull(id),
-        clientKeyId = clientKeyId,
+        siteKeyId = clientKeyId,
         userAccountId = userAccountId,
         workspaceId = workspaceId,
         projectId = projectId,

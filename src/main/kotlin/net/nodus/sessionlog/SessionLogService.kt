@@ -14,7 +14,7 @@ class SessionLogService(
 
         return sessionLogRepository.save(
             SessionLog(
-                clientKeyId = requireNotNull(siteKey.id),
+                siteKeyId = requireNotNull(siteKey.id),
                 userAccountId = siteKey.userAccountId,
                 workspaceId = siteKey.workspaceId,
                 projectId = siteKey.projectId,
