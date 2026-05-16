@@ -1,5 +1,7 @@
 package net.nodus.auth
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.Duration
 
+@Tag(name = "Auth", description = "인증 및 토큰 관리 API")
 @RestController
 @RequestMapping("/auth")
 class AuthController(
@@ -23,6 +26,10 @@ class AuthController(
     private val jwtTokenService: JwtTokenService,
     private val googleOAuthService: GoogleOAuthService,
 ) {
+    @Operation(
+        summary = "엑세스 토큰 재발급",
+        description = "리프레시 토큰을 검증하고 회전시킨 뒤 엑세스 토큰과 리프레시 토큰을 발급합니다."
+    )
     @PostMapping("/refresh")
     fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseEntity<TokenRefreshResponse> {
         val issuedRefreshToken = refreshTokenService.rotate(request.refreshToken)
@@ -36,6 +43,10 @@ class AuthController(
         )
     }
 
+    @Operation(
+        summary = "Google OAuth 코드 로그인",
+        description = "프론트엔드에서 전달한 Google OAuth authorization code로 로그인하고, 액세스 토큰과 리프레시 쿠키를 발급합니다."
+    )
     @PostMapping("/oauth2/google/code")
     fun googleCodeLogin(
         @Valid @RequestBody request: GoogleOAuthCodeRequest,
