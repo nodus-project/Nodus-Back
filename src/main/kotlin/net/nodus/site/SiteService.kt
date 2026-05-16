@@ -1,13 +1,13 @@
 package net.nodus.site
 
 import net.nodus.config.exception.GlobalException
-import net.nodus.project.ProjectRepository
 import net.nodus.site.dto.CreateSiteRequest
 import net.nodus.site.dto.IssuedSiteKey
 import net.nodus.site.dto.SiteCreateResult
 import net.nodus.site.dto.UpdateSiteRequest
 import net.nodus.site.entity.Site
 import net.nodus.site.entity.SiteKey
+import net.nodus.workspace.WorkspaceRepository
 import org.springframework.stereotype.Service
 import java.time.Instant
 
@@ -16,33 +16,32 @@ class SiteService(
     private val siteRepository: SiteRepository,
     private val siteKeyRepository: SiteKeyRepository,
     private val siteKeyService: SiteKeyService,
-    private val projectRepository: ProjectRepository,
+    private val workspaceRepository: WorkspaceRepository,
 ) {
 
     fun create(userId: String, request: CreateSiteRequest): SiteCreateResult {
-        val project = projectRepository.findByIdAndUserAccountIdAndDeletedAtIsNull(
-            id = request.projectId,
-            userAccountId = userId,
-        ) ?: throw GlobalException.DataNotFound("Project not found.")
+        val workspace = workspaceRepository.findByIdAndUserAccountIdAndDeletedAtIsNull(
+            id = request.workspaceId,
+            userAccountId = userId
+        ) ?: throw GlobalException.DataNotFound("Workspace not found.")
 
         val site = siteRepository.save(
             Site(
                 userAccountId = userId,
-                workspaceId = project.workspaceId,
-                projectId = requireNotNull(project.id),
+                workspaceId = requireNotNull(workspace.id),
                 name = request.name,
                 domain = request.domain,
-                url = request.url,
+                url = request.url
             )
         )
 
         return SiteCreateResult(site = site, issuedKey = siteKeyService.issue(site))
     }
 
-    fun list(userId: String, projectId: String): List<Site> =
-        siteRepository.findByUserAccountIdAndProjectIdAndDeletedAtIsNullOrderByCreatedAtDesc(
+    fun list(userId: String, workspaceId: String): List<Site> =
+        siteRepository.findByUserAccountIdAndWorkspaceIdAndDeletedAtIsNullOrderByCreatedAtDesc(
             userAccountId = userId,
-            projectId = projectId
+            workspaceId = workspaceId
         )
 
     fun get(userId: String, siteId: String): Site =

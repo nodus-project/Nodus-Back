@@ -30,7 +30,6 @@ class SiteKeyService(
                 keyPrefix = rawKey.take(KEY_PREFIX_LENGTH),
                 keyHash = requireNotNull(passwordEncoder.encode(rawKey)),
                 workspaceId = site.workspaceId,
-                projectId = site.projectId,
             )
         )
 

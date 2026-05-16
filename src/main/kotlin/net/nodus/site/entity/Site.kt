@@ -10,7 +10,6 @@ class Site (
     @Id val id: String? = null,
     @Indexed val userAccountId: String,
     @Indexed val workspaceId: String,
-    @Indexed val projectId: String,
     var name: String,
     var domain: String? = null,
     var url: String? = null,

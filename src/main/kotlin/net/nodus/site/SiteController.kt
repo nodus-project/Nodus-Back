@@ -61,13 +61,13 @@ class SiteController(
         )
     }
 
-    @Operation(summary = "사이트 목록 조회", description = "특정 프로젝트에 등록된 사이트 목록을 조회합니다.")
+    @Operation(summary = "사이트 목록 조회", description = "특정 워크스페이스에 등록된 사이트 목록을 조회합니다.")
     @GetMapping
     fun list(
         @AuthenticationPrincipal user: AuthUserPrincipal,
-        @RequestParam projectId: String,
+        @RequestParam workspaceId: String,
     ): ApiResponse<List<SiteResponse>> =
-        ApiResponse.success(siteService.list(user.id, projectId).map { it.toResponse() })
+        ApiResponse.success(siteService.list(user.id, workspaceId).map { it.toResponse() })
 
     @Operation(summary = "사이트 단건 조회", description = "사이트 ID로 사이트 상세 정보를 조회합니다.")
     @GetMapping("/{siteId}")

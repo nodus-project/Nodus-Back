@@ -17,7 +17,6 @@ class SessionLogService(
                 siteKeyId = requireNotNull(siteKey.id),
                 userAccountId = siteKey.userAccountId,
                 workspaceId = siteKey.workspaceId,
-                projectId = siteKey.projectId,
                 siteId = siteKey.siteId,
                 userSession = userSession,
             )

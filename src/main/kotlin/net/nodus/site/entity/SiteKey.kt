@@ -22,9 +22,6 @@ class SiteKey (
     val workspaceId: String,
 
     @Indexed
-    val projectId: String,
-
-    @Indexed
     val userAccountId: String,
 
     @Indexed

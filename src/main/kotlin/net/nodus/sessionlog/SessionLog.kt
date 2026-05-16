@@ -17,9 +17,6 @@ class SessionLog (
     val workspaceId: String,
 
     @Indexed
-    val projectId: String,
-
-    @Indexed
     val siteId: String,
 
     @Indexed

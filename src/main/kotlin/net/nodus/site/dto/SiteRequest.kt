@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 
 data class CreateSiteRequest(
     @field:NotBlank
-    val projectId: String,
+    val workspaceId: String,
 
     @field:NotBlank
     val name: String,
