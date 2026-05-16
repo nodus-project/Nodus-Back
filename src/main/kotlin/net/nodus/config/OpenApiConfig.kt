@@ -18,30 +18,5 @@ class OpenApiConfig {
                 Info()
                     .title("Nodus API")
                     .version("v1")
-                    .description(
-                        """
-                            Authentication:
-                            - Google OAuth2 login: GET /oauth2/authorization/google
-                            - OAuth2 callback: GET/login/oauth2/code/google
-                            - API authentication: Authorization: Bearer <accessToken>
-                            
-                            Session log ingestionL
-                            - POST /session-logs
-                            - Currently accepts clientKey in request body.
-                        """.trimIndent()
                     )
-            )
-            .components(
-                Components()
-                    .addSecuritySchemes(
-                        "bearerToken",
-                        SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                    )
-            )
-            .addSecurityItem(
-                SecurityRequirement().addList("bearerAuth")
-            )
 }
