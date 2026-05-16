@@ -57,7 +57,7 @@ class SecurityConfig {
         @Value("\${app.cors.allowed-origins:http://localhost:3000}") allowedOrigins: String
     ): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = allowedOrigins.split(".").map { it.trim()}
+        configuration.allowedOrigins = allowedOrigins.split(",").map { it.trim()}.filter { it.isNotEmpty() }
         configuration.allowedMethods = listOf("GET", "POST", "OPTIONS", "PUT", "DELETE")
         configuration.allowedHeaders = listOf("Authorization", "Content-Type", "X-Requested-With")
         configuration.exposedHeaders = listOf("Authorization")

@@ -24,7 +24,7 @@ data class SessionLogResponse(
 fun SessionLog.toResponse(): SessionLogResponse =
     SessionLogResponse(
         id = requireNotNull(id),
-        siteKeyId = clientKeyId,
+        siteKeyId = siteKeyId,
         userAccountId = userAccountId,
         workspaceId = workspaceId,
         projectId = projectId,
