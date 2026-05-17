@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.nodus.config.exception.GlobalException
+import net.nodus.common.exception.GlobalException
 
 @Component
 class OAuth2LoginSuccessHandler(
@@ -51,7 +51,7 @@ class OAuth2LoginSuccessHandler(
             ?: throw GlobalException.ExternalApiFailed("Google account email is missing")
         val name = oidcUser.fullName ?: email
 
-        val existingUser = userAccountRepository.findByProviderAndProviderId(
+        val existingUser = userAccountRepository.findByProviderAndProviderIdAndDeletedAtIsNull(
             provider = OAuthProvider.GOOGLE,
             providerId = providerId
         )

@@ -1,9 +1,9 @@
 package net.nodus.sessionlog
 
+import net.nodus.common.BaseDocument
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.Instant
 
 @Document(collection = "session_logs")
 class SessionLog (
@@ -13,8 +13,6 @@ class SessionLog (
     @Indexed
     val siteKeyId: String,
 
-    @Indexed
-    val workspaceId: String,
 
     @Indexed
     val siteId: String,
@@ -23,6 +21,4 @@ class SessionLog (
     val userAccountId: String,
 
     val userSession: String,
-
-    val createdAt: Instant = Instant.now(),
-)
+) : BaseDocument()

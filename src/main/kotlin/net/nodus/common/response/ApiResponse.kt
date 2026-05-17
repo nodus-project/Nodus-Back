@@ -1,6 +1,6 @@
-package net.nodus.config
+package net.nodus.common.response
 
-import net.nodus.config.exception.GlobalException
+import net.nodus.common.exception.GlobalException
 import net.nodus.global.error.ErrorCode
 
 data class ApiResponse<T> (

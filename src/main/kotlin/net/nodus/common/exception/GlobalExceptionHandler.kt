@@ -1,7 +1,7 @@
-package net.nodus.config.exception
+package net.nodus.common.exception
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.nodus.config.ApiResponse
+import net.nodus.common.response.ApiResponse
 import net.nodus.global.error.ErrorCode
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException

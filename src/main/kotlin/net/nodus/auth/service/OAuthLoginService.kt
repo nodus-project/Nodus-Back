@@ -13,7 +13,7 @@ class OAuthLoginService(
 ) {
 
     fun loginGoogleUser(providerId: String, email: String, name: String): OAuthLoginResult {
-        val user = userAccountRepository.findByProviderAndProviderId(OAuthProvider.GOOGLE, providerId)
+        val user = userAccountRepository.findByProviderAndProviderIdAndDeletedAtIsNull(OAuthProvider.GOOGLE, providerId)
             ?: userAccountRepository.save(
                 UserAccount(
                     email = email,

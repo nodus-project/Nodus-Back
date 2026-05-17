@@ -1,4 +1,4 @@
-package net.nodus.config.exception
+package net.nodus.common.exception
 
 import net.nodus.global.error.ErrorCode
 

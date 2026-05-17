@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerApiResponse
 import jakarta.validation.Valid
-import net.nodus.config.ApiResponse
+import net.nodus.common.response.ApiResponse
 import net.nodus.security.AuthUserPrincipal
 import net.nodus.site.dto.CreateSiteRequest
 import net.nodus.site.dto.SiteKeyResponse
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -65,9 +64,8 @@ class SiteController(
     @GetMapping
     fun list(
         @AuthenticationPrincipal user: AuthUserPrincipal,
-        @RequestParam workspaceId: String,
     ): ApiResponse<List<SiteResponse>> =
-        ApiResponse.success(siteService.list(user.id, workspaceId).map { it.toResponse() })
+        ApiResponse.success(siteService.list(user.id).map { it.toResponse() })
 
     @Operation(summary = "사이트 단건 조회", description = "사이트 ID로 사이트 상세 정보를 조회합니다.")
     @GetMapping("/{siteId}")

@@ -4,7 +4,7 @@ import net.nodus.account.UserAccount
 import net.nodus.account.UserAccountRepository
 import net.nodus.auth.RefreshToken
 import net.nodus.auth.RefreshTokenRepository
-import net.nodus.config.exception.GlobalException
+import net.nodus.common.exception.GlobalException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -44,7 +44,7 @@ class RefreshTokenService(
 
     fun rotate(rawToken: String): IssuedRefreshToken {
         val now = Instant.now()
-        val refreshToken = refreshTokenRepository.findByTokenHashAndRevokedAtIsNull(hash(rawToken))
+        val refreshToken = refreshTokenRepository.findByTokenHashAndRevokedAtIsNullAndDeletedAtIsNull(hash(rawToken))
             ?: throw GlobalException.Unauthorized("Invalid refresh token")
 
         if (refreshToken.expiresAt.isBefore(now)) {

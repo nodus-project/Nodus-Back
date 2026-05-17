@@ -1,6 +1,6 @@
 package net.nodus.site
 
-import net.nodus.config.exception.GlobalException
+import net.nodus.common.exception.GlobalException
 import net.nodus.site.dto.IssuedSiteKey
 import net.nodus.site.entity.Site
 import net.nodus.site.entity.SiteKey
@@ -29,7 +29,6 @@ class SiteKeyService(
                 siteId = siteId,
                 keyPrefix = rawKey.take(KEY_PREFIX_LENGTH),
                 keyHash = requireNotNull(passwordEncoder.encode(rawKey)),
-                workspaceId = site.workspaceId,
             )
         )
 
@@ -40,7 +39,7 @@ class SiteKeyService(
     }
 
     fun authenticate(rawKey: String): SiteKey {
-        val candidates = siteKeyRepository.findAllByKeyPrefixAndStatus(
+        val candidates = siteKeyRepository.findAllByKeyPrefixAndStatusAndDeletedAtIsNull(
             keyPrefix = rawKey.take(KEY_PREFIX_LENGTH),
             status = SiteKeyStatus.ACTIVE,
         )
@@ -58,8 +57,10 @@ class SiteKeyService(
     }
 
     fun revokeActive(siteId: String) {
-        val activeKey = siteKeyRepository.findBySiteIdAndStatus(siteId, SiteKeyStatus.ACTIVE)
-            ?: return
+        val activeKey = siteKeyRepository.findBySiteIdAndStatusAndDeletedAtIsNull(
+            siteId = siteId,
+            status = SiteKeyStatus.ACTIVE,
+        ) ?: return
 
         activeKey.status = SiteKeyStatus.REVOKED
         activeKey.revokedAt = Instant.now()

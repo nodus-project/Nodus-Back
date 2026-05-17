@@ -33,7 +33,7 @@ class SecurityConfig {
                     "/v3/api-docs/**",
                     "/auth/oauth2/google/code",
                 ).permitAll()
-                    .requestMatchers("/session-logs/**").authenticated()
+                    .requestMatchers("/session-logs/**").permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2Login {

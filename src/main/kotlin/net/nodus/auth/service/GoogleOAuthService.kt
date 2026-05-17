@@ -3,7 +3,7 @@ package net.nodus.auth.service
 import net.nodus.auth.GoogleOAuthCodeRequest
 import net.nodus.auth.service.client.GoogleTokenClient
 import net.nodus.auth.service.client.GoogleUserInfoClient
-import net.nodus.config.exception.GlobalException
+import net.nodus.common.exception.GlobalException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 

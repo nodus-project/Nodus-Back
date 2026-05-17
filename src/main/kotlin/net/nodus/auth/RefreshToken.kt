@@ -1,5 +1,6 @@
 package net.nodus.auth
 
+import net.nodus.common.MutableDocument
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
@@ -18,7 +19,5 @@ class RefreshToken(
 
     val expiresAt: Instant,
 
-    val createdAt: Instant = Instant.now(),
-
     var revokedAt: Instant? = null,
-)
+) : MutableDocument()

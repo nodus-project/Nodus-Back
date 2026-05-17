@@ -1,5 +1,6 @@
 package net.nodus.site.entity
 
+import net.nodus.common.MutableDocument
 import net.nodus.site.SiteKeyStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
@@ -19,9 +20,6 @@ class SiteKey (
     val id: String? = null,
 
     @Indexed
-    val workspaceId: String,
-
-    @Indexed
     val userAccountId: String,
 
     @Indexed
@@ -35,7 +33,5 @@ class SiteKey (
     @Indexed
     var status: SiteKeyStatus = SiteKeyStatus.ACTIVE,
 
-    val createdAt: Instant = Instant.now(),
-
     var revokedAt: Instant? = null,
-)
+) : MutableDocument()

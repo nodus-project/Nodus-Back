@@ -1,34 +1,25 @@
 package net.nodus.site
 
-import net.nodus.config.exception.GlobalException
+import net.nodus.common.exception.GlobalException
 import net.nodus.site.dto.CreateSiteRequest
 import net.nodus.site.dto.IssuedSiteKey
 import net.nodus.site.dto.SiteCreateResult
 import net.nodus.site.dto.UpdateSiteRequest
 import net.nodus.site.entity.Site
 import net.nodus.site.entity.SiteKey
-import net.nodus.workspace.WorkspaceRepository
 import org.springframework.stereotype.Service
-import java.time.Instant
 
 @Service
 class SiteService(
     private val siteRepository: SiteRepository,
     private val siteKeyRepository: SiteKeyRepository,
     private val siteKeyService: SiteKeyService,
-    private val workspaceRepository: WorkspaceRepository,
 ) {
 
     fun create(userId: String, request: CreateSiteRequest): SiteCreateResult {
-        val workspace = workspaceRepository.findByIdAndUserAccountIdAndDeletedAtIsNull(
-            id = request.workspaceId,
-            userAccountId = userId
-        ) ?: throw GlobalException.DataNotFound("Workspace not found.")
-
         val site = siteRepository.save(
             Site(
                 userAccountId = userId,
-                workspaceId = requireNotNull(workspace.id),
                 name = request.name,
                 domain = request.domain,
                 url = request.url
@@ -38,10 +29,9 @@ class SiteService(
         return SiteCreateResult(site = site, issuedKey = siteKeyService.issue(site))
     }
 
-    fun list(userId: String, workspaceId: String): List<Site> =
-        siteRepository.findByUserAccountIdAndWorkspaceIdAndDeletedAtIsNullOrderByCreatedAtDesc(
+    fun list(userId: String): List<Site> =
+        siteRepository.findByUserAccountIdAndDeletedAtIsNullOrderByCreatedAtDesc(
             userAccountId = userId,
-            workspaceId = workspaceId
         )
 
     fun get(userId: String, siteId: String): Site =
@@ -54,7 +44,7 @@ class SiteService(
         request.name?.let { site.name = it }
         site.domain = request.domain
         site.url = request.url
-        site.updatedAt = Instant.now()
+        site.touch()
 
         return siteRepository.save(site)
     }
@@ -62,8 +52,7 @@ class SiteService(
     fun delete(userId: String, siteId: String) {
         val site = get(userId, siteId)
 
-        site.deletedAt = Instant.now()
-        site.updatedAt = Instant.now()
+        site.softDelete()
 
         siteRepository.save(site)
         siteKeyService.revokeActive(siteId)
@@ -72,7 +61,7 @@ class SiteService(
     fun keyInfo(userId: String, siteId: String): SiteKey {
         get(userId, siteId)
 
-        return siteKeyRepository.findBySiteIdAndStatus(siteId, SiteKeyStatus.ACTIVE)
+        return siteKeyRepository.findBySiteIdAndStatusAndDeletedAtIsNull(siteId, SiteKeyStatus.ACTIVE)
             ?: throw GlobalException.DataNotFound("Active site key not found")
     }
 

@@ -1,5 +1,6 @@
 package net.nodus.account
 
+import net.nodus.common.MutableDocument
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.mapping.Document
@@ -22,6 +23,4 @@ class UserAccount(
     var provider: OAuthProvider,
 
     var providerId: String,
-
-    val createdAt: Instant = Instant.now(),
-)
+) : MutableDocument()
