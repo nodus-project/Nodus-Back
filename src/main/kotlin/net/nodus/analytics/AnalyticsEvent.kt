@@ -34,7 +34,7 @@ class AnalyticsEvent (
     val lastPage: String?,
     val currentPage: String?,
 
-    val referrerType: String? = null,
+    val referrerType: ReferrerType? = null,
 
     var durationMs: Long? = null,
 
