@@ -20,6 +20,7 @@ class SiteKeyService(
     fun issue(site: Site): IssuedSiteKey {
         val siteId = requireNotNull(site.id)
 
+        // revoke인지 체크
         revokeActive(siteId)
 
         val rawKey = generateRawKey()

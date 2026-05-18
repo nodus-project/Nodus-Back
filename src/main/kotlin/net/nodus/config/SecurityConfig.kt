@@ -58,7 +58,7 @@ class SecurityConfig {
     ): CorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = allowedOrigins.split(",").map { it.trim()}.filter { it.isNotEmpty() }
-        configuration.allowedMethods = listOf("GET", "POST", "OPTIONS", "PUT", "DELETE")
+        configuration.allowedMethods = listOf("GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH")
         configuration.allowedHeaders = listOf("Authorization", "Content-Type", "X-Requested-With")
         configuration.exposedHeaders = listOf("Authorization")
         configuration.allowCredentials= true

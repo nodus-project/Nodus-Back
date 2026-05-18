@@ -8,10 +8,12 @@ import jakarta.validation.constraints.NotBlank
 import net.nodus.auth.service.GoogleOAuthService
 import net.nodus.auth.service.JwtTokenService
 import net.nodus.auth.service.RefreshTokenService
+import net.nodus.common.exception.GlobalException
 import net.nodus.common.response.ApiResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -31,16 +33,30 @@ class AuthController(
         description = "리프레시 토큰을 검증하고 회전시킨 뒤 엑세스 토큰과 리프레시 토큰을 발급합니다."
     )
     @PostMapping("/refresh")
-    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseEntity<TokenRefreshResponse> {
-        val issuedRefreshToken = refreshTokenService.rotate(request.refreshToken)
+    fun refresh(
+        @CookieValue("refreshToken", required = false)
+        refreshToken: String?,
+        response: HttpServletResponse): ResponseEntity<TokenRefreshResponse> {
+
+        if(refreshToken.isNullOrBlank()) {
+            throw GlobalException.Unauthorized("Missing refresh token.")
+        }
+
+        val issuedRefreshToken = refreshTokenService.rotate(refreshToken)
         val accessToken = jwtTokenService.createAccessToken(issuedRefreshToken.userAccount)
+
+        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $accessToken")
+        response.addHeader(
+            HttpHeaders.SET_COOKIE,
+            createRefreshCookie(issuedRefreshToken.token).toString()
+        )
 
         return ResponseEntity.ok(
             TokenRefreshResponse(
-                accessToken = accessToken,
-                refreshToken = issuedRefreshToken.token,
+                accessToken = accessToken
             )
         )
+
     }
 
     @Operation(
@@ -52,34 +68,33 @@ class AuthController(
         @Valid @RequestBody request: GoogleOAuthCodeRequest,
         response: HttpServletResponse,
     ): ApiResponse<Void> {
-
-        val refreshTokenExpirationSeconds: Long = 60 * 60 * 24 * 7 * 4 // ec2 에러 때매 옮김
         val loginResult = googleOAuthService.login(request)
 
-        val refreshCookie = ResponseCookie.from("refreshToken", loginResult.refreshToken)
+        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer ${loginResult.accessToken}")
+        response.addHeader(
+            HttpHeaders.SET_COOKIE,
+            createRefreshCookie(loginResult.refreshToken).toString()
+        )
+
+        return ApiResponse.success()
+    }
+
+
+    private fun createRefreshCookie(refreshToken: String): ResponseCookie {
+        val refreshTokenExpirationSeconds: Long = 60 * 60 * 24 * 7 * 4
+
+        return ResponseCookie.from("refreshToken", refreshToken)
             .httpOnly(true)
             .secure(true)
             .sameSite("None")
             .path("/")
             .maxAge(Duration.ofSeconds(refreshTokenExpirationSeconds))
             .build()
-
-        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer ${loginResult.accessToken}")
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-
-        return ApiResponse.success()
     }
-
 }
-
-data class RefreshTokenRequest(
-    @field:NotBlank
-    val refreshToken: String,
-)
 
 data class TokenRefreshResponse(
     val accessToken: String,
-    val refreshToken: String,
     val tokenType: String = "Bearer",
 )
 
