@@ -1,11 +1,15 @@
 package net.nodus.security.auth.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import net.nodus.security.auth.dto.GoogleOAuthCodeRequest;
+import net.nodus.database.account.OAuthProvider;
+import net.nodus.database.account.UserAccount;
+import net.nodus.database.account.UserAccountRepository;
+import net.nodus.security.auth.controller.dto.OAuthLoginRequest.GoogleOAuthLoginRequest;
+import net.nodus.security.auth.controller.dto.UserAccountDetails;
 import net.nodus.security.auth.service.client.GoogleTokenClient;
 import net.nodus.security.auth.service.client.GoogleUserInfoClient;
-import net.nodus.global.common.exception.GlobalException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,53 +19,94 @@ public class GoogleOAuthService {
 
     private final GoogleTokenClient googleTokenClient;
     private final GoogleUserInfoClient googleUserInfoClient;
-    private final OAuthLoginService oAuthLoginService;
+
+    private final UserAccountRepository userAccountRepository;
 
     @Value("${google.oauth2.client-id}")
-    private final String clientId;
+    private String clientId;
 
     @Value("${google.oauth2.client-secret}")
-    private final String clientSecret;
+    private String clientSecret;
 
-    public OAuthLoginService.OAuthLoginResult login(GoogleOAuthCodeRequest dto) {
-        String googleAccessToken = exchangeCode(dto);
-        GoogleUserInfo userInfo = fetchUserInfo(googleAccessToken);
+    public UserAccountDetails login(GoogleOAuthLoginRequest dto) {
 
-        return oAuthLoginService.loginGoogleUser(
-            userInfo.subject(),
-            userInfo.email(),
-            userInfo.name() == null ? userInfo.email() : userInfo.name()
-        );
-    }
-
-    private String exchangeCode(GoogleOAuthCodeRequest dto) {
         Map<String, String> params = Map.of(
-            "code", dto.getCode(),
+            "code", dto.code(),
             "client_id", clientId,
             "client_secret", clientSecret,
-            "redirect_uri", dto.getRedirectUri(),
+            "redirect_uri", dto.redirectUri(),
             "grant_type", "authorization_code"
         );
 
-        Map<String, Object> response = googleTokenClient.exchangeCode(params);
-        Object accessToken = response.get("access_token");
-        if (accessToken instanceof String token) {
-            return token;
-        }
-        throw new GlobalException.ExternalApiFailed("Google access token is missing");
+        GoogleTokenInfo tokenInfo = googleTokenClient.exchangeCode(params);
+        GoogleUserInfo userInfo = googleUserInfoClient.fetchUserInfo(
+            "Bearer " + tokenInfo.accessToken);
+
+        UserAccount user = userAccountRepository
+            .findByProviderAndProviderIdAndDeletedAtIsNull(
+                OAuthProvider.GOOGLE,
+                userInfo.sub()
+            )
+            .orElseGet(() -> {
+                UserAccount userAccount = UserAccount.builder()
+                    .providerId(userInfo.sub())
+                    .name(userInfo.name())
+                    .email(userInfo.email())
+                    .provider(OAuthProvider.GOOGLE)
+                    .build();
+                return userAccountRepository.save(userAccount);
+            });
+
+        return new UserAccountDetails(user);
     }
 
-    private GoogleUserInfo fetchUserInfo(String accessToken) {
-        Map<String, Object> response = googleUserInfoClient.fetchUserInfo("Bearer " + accessToken);
+    public record GoogleTokenInfo(
+        @JsonProperty("access_token")
+        String accessToken,
 
-        return new GoogleUserInfo(
-            (String) response.get("sub"),
-            (String) response.get("email"),
-            (String) response.get("name")
-        );
+        @JsonProperty("expires_in")
+        Integer expiresIn,
+
+        @JsonProperty("refresh_token")
+        String refreshToken,
+
+        @JsonProperty("scope")
+        String scope,
+
+        @JsonProperty("token_type")
+        String tokenType,
+
+        @JsonProperty("id_token")
+        String idToken
+    ) {
+
     }
 
-    public record GoogleUserInfo(String subject, String email, String name) {
+    public record GoogleUserInfo(
+        @JsonProperty("sub")
+        String sub,
+
+        @JsonProperty("name")
+        String name,
+
+        @JsonProperty("given_name")
+        String givenName,
+
+        @JsonProperty("family_name")
+        String familyName,
+
+        @JsonProperty("picture")
+        String picture,
+
+        @JsonProperty("email")
+        String email,
+
+        @JsonProperty("email_verified")
+        Boolean emailVerified,
+
+        @JsonProperty("locale")
+        String locale
+    ) {
 
     }
 }

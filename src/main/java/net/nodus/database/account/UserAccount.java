@@ -1,10 +1,11 @@
 package net.nodus.database.account;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import net.nodus.database.common.MutableDocument;
+import net.nodus.database.common.BaseEntity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,27 +17,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
     unique = true
 )
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserAccount extends MutableDocument {
+public class UserAccount extends BaseEntity {
 
     @Id
     private String id;
+
     private String email;
+
     private String name;
+
     private OAuthProvider provider;
+
     private String providerId;
 
-    public UserAccount(String email, String name, OAuthProvider provider, String providerId) {
-        this(null, email, name, provider, providerId);
-    }
+    @Builder.Default
+    private UserRole userRole = UserRole.USER;
 
-    public UserAccount(String id, String email, String name, OAuthProvider provider,
-        String providerId) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.provider = provider;
-        this.providerId = providerId;
-    }
 }

@@ -1,33 +1,26 @@
 package net.nodus.security;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import net.nodus.security.auth.service.JwtTokenService;
-import net.nodus.database.account.UserAccountRepository;
-import org.springframework.http.HttpHeaders;
+import lombok.RequiredArgsConstructor;
+import net.nodus.global.common.exception.UserAuthException;
+import net.nodus.security.auth.controller.AuthManager;
+import net.nodus.security.auth.controller.dto.UserAccountDetails;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenService jwtTokenService;
-    private final UserAccountRepository userAccountRepository;
-
-    public JwtAuthenticationFilter(JwtTokenService jwtTokenService,
-        UserAccountRepository userAccountRepository) {
-        this.jwtTokenService = jwtTokenService;
-        this.userAccountRepository = userAccountRepository;
-    }
+    private final AuthManager authManager;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -37,45 +30,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        FilterChain filterChain
+        @NonNull HttpServletRequest request,
+        @NonNull HttpServletResponse response,
+        @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring("Bearer ".length()).trim();
-
-            try {
-                String userId = jwtTokenService.parseClaims(token).getSubject();
-                userAccountRepository.findById(userId).map(userAccount -> userAccount)
-                    .ifPresent(user -> {
-                        if (user.getId() == null) {
-                            return;
-                        }
-
-                        AuthUserPrincipal principal = new AuthUserPrincipal(user.getId(),
-                            user.getEmail());
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            principal,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                        );
-
-                        authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    });
-            } catch (JwtException | IllegalArgumentException ex) {
-                SecurityContextHolder.clearContext();
-            }
+        try {
+            UserAccountDetails userAccountDetails = authManager.parseAccessToken(request, response);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                AuthUserPrincipal.from(userAccountDetails),
+                null,
+                userAccountDetails.getAuthorities()
+            );
+            authentication.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (UserAuthException ex) {
+        } finally {
+            filterChain.doFilter(request, response);
         }
-
-        filterChain.doFilter(request, response);
     }
 }

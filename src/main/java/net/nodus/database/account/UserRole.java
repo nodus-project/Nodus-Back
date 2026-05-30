@@ -1,5 +1,5 @@
 package net.nodus.database.account;
 
-public enum OAuthProvider {
-    GOOGLE
+public enum UserRole {
+    USER
 }

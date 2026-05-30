@@ -1,5 +1,16 @@
 package net.nodus.security;
 
-public record AuthUserPrincipal(String id, String email) {
+import lombok.Builder;
+import net.nodus.security.auth.controller.dto.UserAccountDetails;
 
+@Builder
+public record AuthUserPrincipal(
+    String id
+) {
+
+    public static AuthUserPrincipal from(UserAccountDetails userAccountDetails) {
+        return AuthUserPrincipal.builder()
+            .id(userAccountDetails.getUsername())
+            .build();
+    }
 }
