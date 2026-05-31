@@ -12,4 +12,6 @@ public interface SiteRepository extends MongoRepository<Site, String> {
         String siteId,
         String userId
     );
+
+    Optional<Site> findByKeyAndDeletedAtIsNull(String key);
 }
