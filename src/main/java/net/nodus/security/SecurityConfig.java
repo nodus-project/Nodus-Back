@@ -32,7 +32,8 @@ public class SecurityConfig {
                     "/login/oauth2/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/auth/oauth2/google/code"
+                    "/auth/oauth2/google/code",
+                    "/sdk/**"
                 ).permitAll()
                 .requestMatchers("/session-logs/**").permitAll()
                 .anyRequest().authenticated()
@@ -49,6 +50,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource(
         @Value("${app.cors.allowed-origins:http://localhost:3000}") String allowedOrigins
     ) {
+        CorsConfiguration sdkConfiguration = new CorsConfiguration();
+        sdkConfiguration.setAllowedOriginPatterns(List.of("*"));
+        sdkConfiguration.setAllowedMethods(List.of("POST", "OPTIONS"));
+        sdkConfiguration.setAllowedHeaders(List.of("Content-Type", "X-Requested-With"));
+        sdkConfiguration.setAllowCredentials(false);
+
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
             .map(String::trim)
@@ -62,6 +69,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/sdk/**", sdkConfiguration);
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
