@@ -9,7 +9,8 @@ public class SiteBaseResponse {
     public record SiteOneResponse(
         String id,
         String name,
-        String url
+        String url,
+        String key
     ) {
 
         public static SiteOneResponse from(Site entity) {
@@ -17,6 +18,7 @@ public class SiteBaseResponse {
                 .id(entity.getId())
                 .name(entity.getName())
                 .url(entity.getUrl())
+                .key(entity.getKey())
                 .build();
         }
     }

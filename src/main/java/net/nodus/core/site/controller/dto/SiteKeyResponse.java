@@ -6,12 +6,12 @@ import net.nodus.database.site.Site;
 public class SiteKeyResponse {
 
     @Builder
-    public record SiteKeyRecreateResponse(
+    public record SiteKeyOneResponse(
         String key
     ) {
 
-        public static SiteKeyRecreateResponse from(Site entity) {
-            return SiteKeyRecreateResponse.builder()
+        public static SiteKeyOneResponse from(Site entity) {
+            return SiteKeyOneResponse.builder()
                 .key(entity.getKey())
                 .build();
         }
