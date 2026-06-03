@@ -43,7 +43,7 @@ public class GoogleOAuthService {
             "Bearer " + tokenInfo.accessToken);
 
         UserAccount user = userAccountRepository
-            .findByProviderAndProviderIdAndDeletedAtIsNull(
+            .findByProviderAndProviderId(
                 OAuthProvider.GOOGLE,
                 userInfo.sub()
             )

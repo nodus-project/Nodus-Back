@@ -1,12 +1,11 @@
 package net.nodus.database.account;
 
 import java.util.Optional;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserAccountRepository extends MongoRepository<UserAccount, String> {
+public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> {
 
-    Optional<UserAccount> findByIdAndDeletedAtIsNull(String id);
-
-    Optional<UserAccount> findByProviderAndProviderIdAndDeletedAtIsNull(OAuthProvider provider,
+    Optional<UserAccount> findByProviderAndProviderId(OAuthProvider provider,
         String providerId);
 }

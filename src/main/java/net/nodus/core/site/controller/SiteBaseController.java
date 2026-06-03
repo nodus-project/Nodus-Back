@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteBaseRequest;
 import net.nodus.core.site.controller.dto.SiteBaseRequest.UpdateSiteRequest;
@@ -53,7 +54,7 @@ public class SiteBaseController {
     @Operation(summary = "사이트 조회")
     @GetMapping("/{siteId}")
     public ApiPayload<SiteOneResponse> findOne(
-        @PathVariable String siteId,
+        @PathVariable UUID siteId,
         @RoleUser AuthUserPrincipal user
     ) {
         var result = siteBaseService.getSite(siteId, user.id());
@@ -63,7 +64,7 @@ public class SiteBaseController {
     @Operation(summary = "사이트 수정")
     @PatchMapping("/{siteId}")
     public ApiPayload<SiteOneResponse> update(
-        @PathVariable String siteId,
+        @PathVariable UUID siteId,
         @RequestBody UpdateSiteRequest dto,
         @RoleUser AuthUserPrincipal user
     ) {
@@ -74,7 +75,7 @@ public class SiteBaseController {
     @Operation(summary = "사이트 삭제")
     @DeleteMapping("/{siteId}")
     public ApiPayload<Void> delete(
-        @PathVariable String siteId,
+        @PathVariable UUID siteId,
         @RoleUser AuthUserPrincipal user
     ) {
         siteBaseService.deleteSite(siteId, user.id());

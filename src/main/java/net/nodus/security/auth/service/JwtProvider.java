@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import net.nodus.database.account.UserAccount;
 import net.nodus.database.account.UserRole;
@@ -61,7 +62,7 @@ public class JwtProvider {
             .getPayload();
 
         UserAccount user = UserAccount.builder()
-            .id(claims.getSubject())
+            .id(UUID.fromString(claims.getSubject()))
             .name(claims.get("name", String.class))
             .userRole(UserRole.valueOf(claims.get("role", String.class)))
             .build();
@@ -77,7 +78,7 @@ public class JwtProvider {
             .getPayload();
 
         UserAccount user = UserAccount.builder()
-            .id(claims.getSubject())
+            .id(UUID.fromString(claims.getSubject()))
             .name(claims.get("name", String.class))
             .userRole(UserRole.valueOf(claims.get("role", String.class)))
             .build();

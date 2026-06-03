@@ -1,4 +1,4 @@
-package net.nodus.database.sdk;
+package net.nodus.database.site;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,20 +13,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.nodus.database.common.BaseEntity;
-import net.nodus.database.site.Site;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import net.nodus.database.account.UserAccount;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
-@SQLDelete(sql = "UPDATE site_visit_log SET deleted_at = now() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SiteVisitLog extends BaseEntity {
+public class SiteAllowedUser {
 
     @Id
     @GeneratedValue
@@ -42,10 +37,8 @@ public class SiteVisitLog extends BaseEntity {
         this.site = site;
     }
 
-    @Column(nullable = false)
-    private String sessionId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_account_id", nullable = false)
+    private UserAccount userAccount;
 
-    private String lastPage;
-
-    private String currentPage;
 }

@@ -1,17 +1,11 @@
 package net.nodus.database.site;
 
-import java.util.List;
 import java.util.Optional;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SiteRepository extends MongoRepository<Site, String> {
+public interface SiteRepository extends JpaRepository<Site, UUID> {
 
-    List<Site> findAllByAllowedUserListIdAndDeletedAtIsNull(String userId);
 
-    Optional<Site> findByIdAndAllowedUserListIdAndDeletedAtIsNull(
-        String siteId,
-        String userId
-    );
-
-    Optional<Site> findByKeyAndDeletedAtIsNull(String key);
+    Optional<Site> findByKey(String key);
 }

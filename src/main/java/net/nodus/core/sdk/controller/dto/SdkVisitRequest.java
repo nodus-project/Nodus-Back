@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public class SdkVisitRequest {
 
     public record SdkVisitPostRequest(
+        @NotNull
         String sessionId,
 
         @NotNull
