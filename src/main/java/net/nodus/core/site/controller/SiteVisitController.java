@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteVisitResponse.SiteVisitCountResponse;
 import net.nodus.core.site.service.SiteVisitService;
@@ -29,7 +30,7 @@ public class SiteVisitController {
     @Operation(summary = "사이트 방문 사용자 수 조회")
     @GetMapping("/{siteId}")
     public ApiPayload<SiteVisitCountResponse> getAllUser(
-        @PathVariable String siteId,
+        @PathVariable UUID siteId,
         @RequestParam("start") LocalDate start,
         @RequestParam("end") LocalDate end,
         @RoleUser AuthUserPrincipal user

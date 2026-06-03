@@ -3,6 +3,7 @@ package net.nodus.core.site.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteKeyResponse.SiteKeyOneResponse;
 import net.nodus.core.site.service.SiteKeyService;
@@ -26,7 +27,7 @@ public class SiteKeyController {
     @Operation(summary = "사이트 키 재발급")
     @PostMapping("/{siteId}")
     public ApiPayload<SiteKeyOneResponse> recreateKey(
-        @PathVariable String siteId,
+        @PathVariable UUID siteId,
         @RoleUser AuthUserPrincipal user
     ) {
         var result = siteKeyService.recreateKey(siteId, user.id());

@@ -1,5 +1,6 @@
 package net.nodus.core.site.controller.dto;
 
+import java.util.UUID;
 import lombok.Builder;
 import net.nodus.database.site.Site;
 
@@ -7,7 +8,7 @@ public class SiteBaseResponse {
 
     @Builder
     public record SiteOneResponse(
-        String id,
+        UUID id,
         String name,
         String url,
         String key

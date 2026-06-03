@@ -1,5 +1,11 @@
 package net.nodus.database.site;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +15,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.nodus.database.account.UserAccount;
 import net.nodus.database.common.BaseEntity;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import net.nodus.database.sdk.SiteVisitLog;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UuidGenerator;
 
-@Document("sites")
+@Entity
+@SQLDelete(sql = "UPDATE sites SET deleted_at = now() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Builder
 @AllArgsConstructor
@@ -22,37 +31,47 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Site extends BaseEntity {
 
     @Id
-    private String id;
+    @GeneratedValue
+    @UuidGenerator
+    @Column(updatable = false)
+    private UUID id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String url;
 
-    public void update(String name, String url) {
+    public void updateBaseInfo(String name, String url) {
         this.name = name;
         this.url = url;
     }
 
     @Builder.Default
+    @Column(unique = true)
     private String key = null;
 
     public void recreateKey() {
-        this.key = this.id + UUID.randomUUID() + LocalDateTime.now();
+        this.key = this.id.toString() + UUID.randomUUID() + LocalDateTime.now();
     }
 
     @Builder.Default
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SiteAllowedUser> allowedUserList = new ArrayList<>();
 
-    public void addAllowedUser(UserAccount userAccount) {
-        SiteAllowedUser siteAllowedUser = SiteAllowedUser.builder()
-            .id(userAccount.getId())
-            .build();
-        allowedUserList.add(siteAllowedUser);
+    public void addAllowedUser(SiteAllowedUser allowedUser) {
+        allowedUser.settingSite(this);
+        allowedUserList.add(allowedUser);
     }
 
-    @Builder
-    public record SiteAllowedUser(
-        String id
-    ) {
+    @Builder.Default
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SiteVisitLog> visitLogList = new ArrayList<>();
 
+    public void addVisitLog(SiteVisitLog visitLog) {
+        visitLog.settingSite(this);
+        visitLogList.add(visitLog);
     }
+
+
 }
