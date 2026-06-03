@@ -1,4 +1,4 @@
-package net.nodus.database.site;
+package net.nodus.database.sdk;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,8 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.nodus.database.account.UserAccount;
 import net.nodus.database.common.BaseEntity;
+import net.nodus.database.site.Site;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -22,7 +22,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SiteAllowedUser extends BaseEntity {
+public class SiteActivationLog extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -38,8 +38,11 @@ public class SiteAllowedUser extends BaseEntity {
         this.site = site;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_account_id", nullable = false)
-    private UserAccount userAccount;
+    @Column(nullable = false)
+    private String sessionId;
+
+    private String featureName;
+
+    private String currentPage;
 
 }

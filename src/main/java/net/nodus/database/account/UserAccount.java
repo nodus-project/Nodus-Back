@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.nodus.database.common.BaseEntity;
+import net.nodus.database.common.BaseDeleteEntity;
 import net.nodus.database.site.SiteAllowedUser;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -29,7 +29,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserAccount extends BaseEntity {
+public class UserAccount extends BaseDeleteEntity {
 
     @Id
     @GeneratedValue

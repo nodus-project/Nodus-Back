@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.nodus.core.sdk.controller.dto.SdkVisitRequest.SdkVisitPostRequest;
-import net.nodus.core.sdk.service.SdkVisitService;
+import net.nodus.core.sdk.controller.dto.SdkLogRequest;
+import net.nodus.core.sdk.service.SdkLogService;
 import net.nodus.global.common.response.ApiPayload;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,17 +17,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/sdk")
 @RequiredArgsConstructor
-public class SdkVisitController {
+public class SdkController {
 
-    private final SdkVisitService sdkVisitService;
+    private final SdkLogService sdkLogService;
 
     @Operation(summary = "사이트 접속 로그")
     @PostMapping("/visit")
-    public ApiPayload<Void> create(
+    public ApiPayload<Void> visit(
         @RequestParam String key,
-        @Valid @RequestBody SdkVisitPostRequest dto
+        @Valid @RequestBody SdkLogRequest.SdkVisitPostRequest dto
     ) {
-        sdkVisitService.create(key, dto);
+        sdkLogService.visitLog(key, dto);
         return ApiPayload.success();
     }
+
+    @Operation(summary = "활동 로그")
+    @PostMapping("/activation")
+    public ApiPayload<Void> activation(
+        @RequestParam String key,
+        @Valid @RequestBody SdkLogRequest.SdkActivationPostRequest dto
+    ) {
+        sdkLogService.activationLog(key, dto);
+        return ApiPayload.success();
+    }
+
 }
