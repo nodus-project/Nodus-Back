@@ -1,10 +1,9 @@
 package net.nodus.security;
 
-import java.util.Arrays;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
@@ -18,7 +17,23 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
+    @Order(1)
+    public SecurityFilterChain sdkSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/sdk/**")
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(requests -> requests
+                .anyRequest().permitAll()
+            )
+            .cors(cors -> {
+            });
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain defaultSecurityFilterChain(
         HttpSecurity http,
         JwtAuthenticationFilter jwtAuthenticationFilter
     ) throws Exception {
@@ -32,8 +47,7 @@ public class SecurityConfig {
                     "/login/oauth2/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/auth/oauth2/google/code",
-                    "/sdk/**"
+                    "/auth/oauth2/google/code"
                 ).permitAll()
                 .requestMatchers("/session-logs/**").permitAll()
                 .anyRequest().authenticated()
@@ -47,30 +61,50 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(
-        @Value("${app.cors.allowed-origins:http://localhost:3000}") String allowedOrigins
-    ) {
-        CorsConfiguration sdkConfiguration = new CorsConfiguration();
-        sdkConfiguration.setAllowedOriginPatterns(List.of("*"));
-        sdkConfiguration.setAllowedMethods(List.of("POST", "OPTIONS"));
-        sdkConfiguration.setAllowedHeaders(List.of("Content-Type", "X-Requested-With"));
-        sdkConfiguration.setAllowCredentials(false);
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/sdk/**", sdkCorsConfiguration());
+        source.registerCorsConfiguration("/**", defaultCorsConfiguration());
+        return source;
+    }
+
+    private CorsConfiguration sdkCorsConfiguration() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(
+            List.of(
+                "POST"
+            )
+        );
+        configuration.setAllowedHeaders(List.of());
+        configuration.setAllowCredentials(false);
+        return configuration;
+    }
+
+    private CorsConfiguration defaultCorsConfiguration() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
-            .map(String::trim)
-            .filter(origin -> !origin.isEmpty())
-            .toList());
+        configuration.setAllowedOrigins(
+            List.of(
+                "http://localhost:3000",
+                "https://nodus.ministudiolab.com"
+            )
+        );
+
         configuration.setAllowedMethods(
-            List.of("GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"));
+            List.of(
+                "GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"
+            )
+        );
+
         configuration.setAllowedHeaders(
-            List.of("Authorization", "Content-Type", "X-Requested-With"));
+            List.of(
+                "Authorization", "Content-Type", "X-Requested-With"
+            )
+        );
+
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/sdk/**", sdkConfiguration);
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        return configuration;
     }
 }
