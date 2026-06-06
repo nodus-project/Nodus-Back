@@ -8,16 +8,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface SiteVisitLogRepository extends JpaRepository<SiteVisitLog, UUID> {
+public interface SiteActivationLogRepository extends JpaRepository<SiteActivationLog, UUID> {
 
     @Query("""
-        select siteVisitLog
-        from SiteVisitLog siteVisitLog
-        where siteVisitLog.site = :site
-          and siteVisitLog.createdAt >= :start
-          and siteVisitLog.createdAt < :end
+        select siteActivationLog
+        from SiteActivationLog siteActivationLog
+        where siteActivationLog.site = :site
+          and siteActivationLog.createdAt >= :start
+          and siteActivationLog.createdAt < :end
         """)
-    List<SiteVisitLog> findVisitLogs(
+    List<SiteActivationLog> findActivationLogs(
         @Param("site")
         Site site,
         @Param("start")

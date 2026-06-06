@@ -30,4 +30,16 @@ public class SdkLogRequest {
     ) {
 
     }
+
+    public record SdkRevenuePostRequest(
+        @NotNull
+        String sessionId,
+
+        String tag,
+
+        @NotBlank
+        String currentPage
+    ) {
+
+    }
 }

@@ -41,4 +41,14 @@ public class SdkController {
         return ApiPayload.success();
     }
 
+    @Operation(summary = "결제 로그")
+    @PostMapping("/revenue")
+    public ApiPayload<Void> revenue(
+        @RequestParam String key,
+        @Valid @RequestBody SdkLogRequest.SdkRevenuePostRequest dto
+    ) {
+        sdkLogService.revenueLog(key, dto);
+        return ApiPayload.success();
+    }
+
 }

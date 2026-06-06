@@ -2,8 +2,10 @@ package net.nodus.core.sdk.service;
 
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkActivationPostRequest;
+import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkRevenuePostRequest;
 import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkVisitPostRequest;
 import net.nodus.database.sdk.SiteActivationLog;
+import net.nodus.database.sdk.SiteRevenueLog;
 import net.nodus.database.sdk.SiteVisitLog;
 import net.nodus.database.site.Site;
 import net.nodus.database.site.SiteRepository;
@@ -47,5 +49,21 @@ public class SdkLogService {
             .build();
 
         site.addActivationLog(activationLog);
+    }
+
+    @Transactional
+    public void revenueLog(String key, SdkRevenuePostRequest dto) {
+        Site site = siteRepository.findByKey(key)
+            .orElseThrow(
+                () -> new DataNotFound(DataNotFound.SITE_NOT_FOUND)
+            );
+
+        SiteRevenueLog revenueLog = SiteRevenueLog.builder()
+            .sessionId(dto.sessionId())
+            .tag(dto.tag())
+            .currentPage(dto.currentPage())
+            .build();
+
+        site.addRevenueLog(revenueLog);
     }
 }

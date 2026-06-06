@@ -72,11 +72,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(
-            List.of(
-                "POST"
-            )
+            List.of("POST", "OPTIONS")
         );
-        configuration.setAllowedHeaders(List.of());
+        configuration.setAllowedHeaders(List.of("Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(false);
         return configuration;
     }
