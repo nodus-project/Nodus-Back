@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationRateResponse;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.ActiveUserCountResponse;
-import net.nodus.database.sdk.SiteActivationLog;
+import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationNameCountResponse;
+import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
+import net.nodus.core.site.controller.dto.SiteActivationResponse.CountResponse;
 import net.nodus.database.sdk.SiteActivationLogRepository;
-import net.nodus.database.sdk.SiteVisitLog;
+import net.nodus.database.sdk.SiteRevenueLogRepository;
 import net.nodus.database.sdk.SiteVisitLogRepository;
 import net.nodus.database.site.Site;
 import net.nodus.database.site.SiteAllowedUser;
@@ -23,93 +23,63 @@ public class SiteActivationService {
 
     private final SiteVisitLogRepository siteVisitLogRepository;
     private final SiteActivationLogRepository siteActivationLogRepository;
+    private final SiteRevenueLogRepository siteRevenueLogRepository;
     private final SiteAllowedUserRepository siteAllowedUserRepository;
 
     @Transactional(readOnly = true)
-    public ActiveUserCountResponse findActiveUserLogs(
+    public ActivationResponse findLogList(
         UUID siteId,
         LocalDateTime start,
         LocalDateTime end,
         UUID userId
     ) {
-        Site site = getAllowedSite(siteId, userId);
-        List<SiteVisitLog> visitLogList = siteVisitLogRepository.findVisitLogs(
-            site,
-            start,
-            end
-        );
-        return ActiveUserCountResponse.from(visitLogList);
-    }
+        Site site = findAllowedSite(siteId, userId);
 
-    @Transactional(readOnly = true)
-    public ActivationRateResponse findActivationRateLogs(
-        UUID siteId,
-        LocalDateTime start,
-        LocalDateTime end,
-        UUID userId
-    ) {
-        Site site = getAllowedSite(siteId, userId);
-        List<SiteVisitLog> visitLogList = siteVisitLogRepository.findVisitLogs(site, start, end);
-        List<SiteActivationLog> activationLogList = siteActivationLogRepository.findActivationLogs(
-            site, start, end);
-        return ActivationRateResponse.from(visitLogList, activationLogList);
-    }
+        Long visitCount = siteVisitLogRepository.countDistinctSessionId(site, start, end);
+        Long activationCount = siteActivationLogRepository.countDistinctSessionId(site, start, end);
+        Long revenueCount = siteRevenueLogRepository.countDistinctSessionId(site, start, end);
 
-    @Transactional(readOnly = true)
-    public TimeToActivationLogs findTimeToActivationLogs(
-        UUID siteId,
-        LocalDateTime start,
-        LocalDateTime end,
-        UUID userId
-    ) {
-        Site site = getAllowedSite(siteId, userId);
-        return new TimeToActivationLogs(
-            siteVisitLogRepository.findVisitLogs(site, start, end),
-            siteActivationLogRepository.findActivationLogs(site, start, end)
+        return ActivationResponse.from(
+            activationCount,
+            visitCount,
+            revenueCount
         );
     }
 
     @Transactional(readOnly = true)
-    public FirstEventLogs findFirstEventLogs(
+    public CountResponse findFirstEventUserCount(
         UUID siteId,
         LocalDateTime start,
         LocalDateTime end,
         UUID userId
     ) {
-        Site site = getAllowedSite(siteId, userId);
-        return new FirstEventLogs(
-            siteVisitLogRepository.findVisitLogs(site, start, end),
-            siteActivationLogRepository.findActivationLogs(site, start, end)
-        );
+        Site site = findAllowedSite(siteId, userId);
+        Long count = siteActivationLogRepository.countFirstEventUsers(site, start, end);
+
+        return CountResponse.from(count);
     }
 
-    private Site getAllowedSite(UUID siteId, UUID userId) {
+    @Transactional(readOnly = true)
+    public List<ActivationNameCountResponse> findActivationNameCounts(
+        UUID siteId,
+        LocalDateTime start,
+        LocalDateTime end,
+        UUID userId
+    ) {
+        Site site = findAllowedSite(siteId, userId);
+
+        return siteActivationLogRepository.countByFeatureName(site, start, end).stream()
+            .map(ActivationNameCountResponse::from)
+            .toList();
+    }
+
+    private Site findAllowedSite(UUID siteId, UUID userId) {
         SiteAllowedUser allowedSite = siteAllowedUserRepository.findBySiteIdAndUserAccountId(
                 siteId, userId)
             .orElseThrow(
                 () -> new DataNotFound(DataNotFound.SITE_NOT_FOUND)
             );
+
         return allowedSite.getSite();
-    }
-
-    public record ActivationRateLogs(
-        List<SiteVisitLog> visitLogs,
-        List<SiteActivationLog> activationLogs
-    ) {
-
-    }
-
-    public record TimeToActivationLogs(
-        List<SiteVisitLog> visitLogs,
-        List<SiteActivationLog> activationLogs
-    ) {
-
-    }
-
-    public record FirstEventLogs(
-        List<SiteVisitLog> visitLogs,
-        List<SiteActivationLog> activationLogs
-    ) {
-
     }
 }

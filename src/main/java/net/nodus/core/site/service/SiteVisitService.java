@@ -34,7 +34,7 @@ public class SiteVisitService {
                 () -> new DataNotFound(DataNotFound.SITE_NOT_FOUND)
             );
         Site site = allowedSiteList.getSite();
-        List<SiteVisitLog> visitLogList = siteVisitLogRepository.findVisitLogs(site, start, end);
+        List<SiteVisitLog> visitLogList = siteVisitLogRepository.findLogList(site, start, end);
 
         return SiteVisitCountResponse.from(visitLogList);
     }
