@@ -1,9 +1,7 @@
 package net.nodus.core.site.controller.dto;
 
-import java.time.LocalDateTime;
 import lombok.Builder;
-import net.nodus.database.sdk.SiteActivationLogRepository.ActivationNameCount;
-import net.nodus.database.sdk.SiteActivationLogRepository.FirstEventUser;
+import net.nodus.database.sdk.SiteActivationLogRepository.ActivationFeatureCount;
 
 public class SiteActivationResponse {
 
@@ -45,24 +43,10 @@ public class SiteActivationResponse {
         Long count
     ) {
 
-        public static ActivationNameCountResponse from(ActivationNameCount activationNameCount) {
+        public static ActivationNameCountResponse from(ActivationFeatureCount activationNameCount) {
             return ActivationNameCountResponse.builder()
                 .name(activationNameCount.getName())
                 .count(activationNameCount.getCount())
-                .build();
-        }
-    }
-
-    @Builder
-    public record FirstEventUserResponse(
-        String sessionId,
-        LocalDateTime firstEventAt
-    ) {
-
-        public static FirstEventUserResponse from(FirstEventUser firstEventUser) {
-            return FirstEventUserResponse.builder()
-                .sessionId(firstEventUser.getSessionId())
-                .firstEventAt(firstEventUser.getFirstEventAt())
                 .build();
         }
     }

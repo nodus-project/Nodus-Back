@@ -47,6 +47,23 @@ public class SiteActivationController {
         return ApiPayload.success(result);
     }
 
+    @Operation(summary = "기능별 개수 조회")
+    @GetMapping("/{siteId}/feature")
+    public ApiPayload<List<ActivationNameCountResponse>> getActivationNameCounts(
+        @PathVariable UUID siteId,
+        @RequestParam("start") LocalDate start,
+        @RequestParam("end") LocalDate end,
+        @RoleUser AuthUserPrincipal user
+    ) {
+        var result = siteActivationService.findActivationNameCounts(
+            siteId,
+            toStartDateTime(start),
+            toEndDateTime(end),
+            user.id()
+        );
+        return ApiPayload.success(result);
+    }
+
     @Operation(summary = "첫 이벤트 사용 유저 개수 조회")
     @GetMapping("/{siteId}/first-event-users")
     public ApiPayload<CountResponse> getFirstEventUserCount(
@@ -56,23 +73,6 @@ public class SiteActivationController {
         @RoleUser AuthUserPrincipal user
     ) {
         var result = siteActivationService.findFirstEventUserCount(
-            siteId,
-            toStartDateTime(start),
-            toEndDateTime(end),
-            user.id()
-        );
-        return ApiPayload.success(result);
-    }
-
-    @Operation(summary = "활성화 name별 개수 조회")
-    @GetMapping("/{siteId}/names")
-    public ApiPayload<List<ActivationNameCountResponse>> getActivationNameCounts(
-        @PathVariable UUID siteId,
-        @RequestParam("start") LocalDate start,
-        @RequestParam("end") LocalDate end,
-        @RoleUser AuthUserPrincipal user
-    ) {
-        var result = siteActivationService.findActivationNameCounts(
             siteId,
             toStartDateTime(start),
             toEndDateTime(end),

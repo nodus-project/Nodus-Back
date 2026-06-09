@@ -11,22 +11,6 @@ import org.springframework.data.repository.query.Param;
 public interface SiteActivationLogRepository extends JpaRepository<SiteActivationLog, UUID> {
 
     @Query("""
-        select siteActivationLog
-        from SiteActivationLog siteActivationLog
-        where siteActivationLog.site = :site
-          and siteActivationLog.createdAt >= :start
-          and siteActivationLog.createdAt < :end
-        """)
-    List<SiteActivationLog> findLogList(
-        @Param("site")
-        Site site,
-        @Param("start")
-        LocalDateTime start,
-        @Param("end")
-        LocalDateTime end
-    );
-
-    @Query("""
         select count(distinct siteActivationLog.sessionId)
         from SiteActivationLog siteActivationLog
         where siteActivationLog.site = :site
@@ -79,7 +63,7 @@ public interface SiteActivationLogRepository extends JpaRepository<SiteActivatio
         group by siteActivationLog.featureName
         order by count(siteActivationLog.id) desc
         """)
-    List<ActivationNameCount> countByFeatureName(
+    List<ActivationFeatureCount> countByFeatureName(
         @Param("site")
         Site site,
         @Param("start")
@@ -95,7 +79,7 @@ public interface SiteActivationLogRepository extends JpaRepository<SiteActivatio
         LocalDateTime getFirstEventAt();
     }
 
-    interface ActivationNameCount {
+    interface ActivationFeatureCount {
 
         String getName();
 
