@@ -15,7 +15,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.nodus.database.common.BaseEntity;
+import net.nodus.database.common.BaseDeleteEntity;
+import net.nodus.database.sdk.SiteActivationLog;
+import net.nodus.database.sdk.SiteRevenueLog;
 import net.nodus.database.sdk.SiteVisitLog;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -28,7 +30,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Site extends BaseEntity {
+public class Site extends BaseDeleteEntity {
 
     @Id
     @GeneratedValue
@@ -73,5 +75,22 @@ public class Site extends BaseEntity {
         visitLogList.add(visitLog);
     }
 
+    @Builder.Default
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SiteActivationLog> activationLogList = new ArrayList<>();
+
+    public void addActivationLog(SiteActivationLog activationLog) {
+        activationLog.settingSite(this);
+        activationLogList.add(activationLog);
+    }
+
+    @Builder.Default
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SiteRevenueLog> revenueLogList = new ArrayList<>();
+
+    public void addRevenueLog(SiteRevenueLog revenueLog) {
+        revenueLog.settingSite(this);
+        revenueLogList.add(revenueLog);
+    }
 
 }

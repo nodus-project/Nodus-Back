@@ -88,9 +88,7 @@ public class SiteBaseService {
                 () -> new DataNotFound(DataNotFound.SITE_NOT_FOUND)
             );
         Site site = allowedSiteList.getSite();
-
-        site.delete();
-        siteRepository.save(site);
+        siteRepository.delete(site);
     }
 
 }

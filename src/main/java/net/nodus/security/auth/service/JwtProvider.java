@@ -24,6 +24,9 @@ public class JwtProvider {
     @Value("${jwt.access-token-expiration-seconds}")
     private Long expirationSeconds;
 
+    @Value("${jwt.refresh-token-expiration-seconds}")
+    private Long refreshExpirationSeconds;
+
     public String createAccessToken(UserAccountDetails user) {
         String userId = Objects.requireNonNull(user.getUsername());
         Instant now = Instant.now();
@@ -42,7 +45,7 @@ public class JwtProvider {
     public String createRefreshToken(UserAccountDetails user) {
         String userId = Objects.requireNonNull(user.getUsername());
         Instant now = Instant.now();
-        Instant expiresAt = now.plusSeconds(expirationSeconds);
+        Instant expiresAt = now.plusSeconds(refreshExpirationSeconds);
 
         return Jwts.builder()
             .subject(userId)

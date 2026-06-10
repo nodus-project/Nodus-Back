@@ -15,13 +15,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.nodus.database.common.BaseEntity;
 import net.nodus.database.site.Site;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
-@SQLDelete(sql = "UPDATE site_visit_log SET deleted_at = now() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Builder
 @AllArgsConstructor

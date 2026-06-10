@@ -21,11 +21,4 @@ public abstract class BaseEntity {
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
-    }
 }
