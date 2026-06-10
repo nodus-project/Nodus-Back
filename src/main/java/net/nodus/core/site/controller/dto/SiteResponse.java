@@ -4,7 +4,7 @@ import java.util.UUID;
 import lombok.Builder;
 import net.nodus.database.site.Site;
 
-public class SiteBaseResponse {
+public class SiteResponse {
 
     @Builder
     public record SiteOneResponse(

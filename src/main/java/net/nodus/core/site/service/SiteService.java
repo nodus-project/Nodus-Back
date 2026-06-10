@@ -3,9 +3,9 @@ package net.nodus.core.site.service;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.nodus.core.site.controller.dto.SiteBaseRequest.SiteCreateRequest;
-import net.nodus.core.site.controller.dto.SiteBaseRequest.UpdateSiteRequest;
-import net.nodus.core.site.controller.dto.SiteBaseResponse.SiteOneResponse;
+import net.nodus.core.site.controller.dto.SiteRequest.SiteCreateRequest;
+import net.nodus.core.site.controller.dto.SiteRequest.UpdateSiteRequest;
+import net.nodus.core.site.controller.dto.SiteResponse.SiteOneResponse;
 import net.nodus.database.account.UserAccount;
 import net.nodus.database.account.UserAccountRepository;
 import net.nodus.database.site.Site;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SiteBaseService {
+public class SiteService {
 
     private final UserAccountRepository userAccountRepository;
     private final SiteRepository siteRepository;

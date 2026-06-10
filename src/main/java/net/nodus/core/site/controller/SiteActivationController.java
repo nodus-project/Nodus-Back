@@ -30,24 +30,7 @@ public class SiteActivationController {
 
     private final SiteActivationService siteActivationService;
 
-    @Operation(summary = "활성화 사용 현황 조회")
-    @GetMapping("/{siteId}")
-    public ApiPayload<ActivationResponse> getActiveUserCount(
-        @PathVariable UUID siteId,
-        @RequestParam("start") LocalDate start,
-        @RequestParam("end") LocalDate end,
-        @RoleUser AuthUserPrincipal user
-    ) {
-        var result = siteActivationService.findLogList(
-            siteId,
-            toStartDateTime(start),
-            toEndDateTime(end),
-            user.id()
-        );
-        return ApiPayload.success(result);
-    }
-
-    @Operation(summary = "기능별 개수 조회")
+    @Operation(summary = "기능별 사용 내역 조회")
     @GetMapping("/{siteId}/feature")
     public ApiPayload<List<ActivationNameCountResponse>> getActivationNameCounts(
         @PathVariable UUID siteId,
@@ -67,6 +50,23 @@ public class SiteActivationController {
     @Operation(summary = "첫 이벤트 사용 유저 개수 조회")
     @GetMapping("/{siteId}/first-event-users")
     public ApiPayload<CountResponse> getFirstEventUserCount(
+        @PathVariable UUID siteId,
+        @RequestParam("start") LocalDate start,
+        @RequestParam("end") LocalDate end,
+        @RoleUser AuthUserPrincipal user
+    ) {
+        var result = siteActivationService.findFirstEventUserCount(
+            siteId,
+            toStartDateTime(start),
+            toEndDateTime(end),
+            user.id()
+        );
+        return ApiPayload.success(result);
+    }
+
+    @Operation(summary = "기능별 사용자 조회")
+    @GetMapping("/{siteId}/event-users")
+    public ApiPayload<CountResponse> getEventUserCount(
         @PathVariable UUID siteId,
         @RequestParam("start") LocalDate start,
         @RequestParam("end") LocalDate end,
