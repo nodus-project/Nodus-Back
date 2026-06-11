@@ -21,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SiteActivationService {
 
-    private final SiteVisitLogRepository siteVisitLogRepository;
     private final SiteActivationLogRepository siteActivationLogRepository;
-    private final SiteRevenueLogRepository siteRevenueLogRepository;
     private final SiteAllowedUserRepository siteAllowedUserRepository;
 
     @Transactional(readOnly = true)
