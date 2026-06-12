@@ -47,14 +47,14 @@ public class SiteActivationController {
     }
 
     @Operation(summary = "첫 이벤트 사용 유저 개수 조회")
-    @GetMapping("/{siteId}/first-event-users")
-    public ApiPayload<CountResponse> getFirstEventUserCount(
+    @GetMapping("/{siteId}/first-feature-users")
+    public ApiPayload<CountResponse> getFirstFeatureUserCount(
         @PathVariable UUID siteId,
         @RequestParam("start") LocalDate start,
         @RequestParam("end") LocalDate end,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteActivationService.findFirstEventUserCount(
+        var result = siteActivationService.findFirstFeatureUserCount(
             siteId,
             toStartDateTime(start),
             toEndDateTime(end),
@@ -64,14 +64,14 @@ public class SiteActivationController {
     }
 
     @Operation(summary = "기능별 사용자 조회")
-    @GetMapping("/{siteId}/event-users")
+    @GetMapping("/{siteId}/feature-users")
     public ApiPayload<CountResponse> getEventUserCount(
         @PathVariable UUID siteId,
         @RequestParam("start") LocalDate start,
         @RequestParam("end") LocalDate end,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteActivationService.findFirstEventUserCount(
+        var result = siteActivationService.findFirstFeatureUserCount(
             siteId,
             toStartDateTime(start),
             toEndDateTime(end),
