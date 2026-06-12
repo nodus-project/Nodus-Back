@@ -1,6 +1,5 @@
 package net.nodus.core.site.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
@@ -21,25 +20,26 @@ public class SiteSummaryService {
     private final SiteVisitLogRepository siteVisitLogRepository;
     private final SiteActivationLogRepository siteActivationLogRepository;
     private final SiteRevenueLogRepository siteRevenueLogRepository;
+
     private final SiteAllowedUserRepository siteAllowedUserRepository;
 
     @Transactional(readOnly = true)
     public ActivationResponse findLogList(
         UUID siteId,
-        LocalDateTime start,
-        LocalDateTime end,
         UUID userId
     ) {
         Site site = findAllowedSite(siteId, userId);
 
-        Long visitCount = siteVisitLogRepository.countDistinctSessionId(site, start, end);
-        Long activationCount = siteActivationLogRepository.countDistinctSessionId(site, start, end);
-        Long revenueCount = siteRevenueLogRepository.countDistinctSessionId(site, start, end);
+        Long acquisitionCount = siteVisitLogRepository.countDistinctSessionId(site);
+        Long activationCount = siteActivationLogRepository.countDistinctSessionId(site);
+        Long revenueCount = siteRevenueLogRepository.countDistinctSessionId(site);
+        Long retentionCount = siteVisitLogRepository.countRetentionSessionId(site);
 
         return ActivationResponse.from(
+            acquisitionCount,
             activationCount,
-            visitCount,
-            revenueCount
+            revenueCount,
+            retentionCount
         );
     }
 

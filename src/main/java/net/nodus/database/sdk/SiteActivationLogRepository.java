@@ -1,7 +1,5 @@
 package net.nodus.database.sdk;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import net.nodus.database.site.Site;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,75 +12,11 @@ public interface SiteActivationLogRepository extends JpaRepository<SiteActivatio
         select count(distinct siteActivationLog.sessionId)
         from SiteActivationLog siteActivationLog
         where siteActivationLog.site = :site
-          and siteActivationLog.createdAt >= :start
-          and siteActivationLog.createdAt < :end
           and siteActivationLog.sessionId <> ''
         """)
     Long countDistinctSessionId(
         @Param("site")
-        Site site,
-        @Param("start")
-        LocalDateTime start,
-        @Param("end")
-        LocalDateTime end
+        Site site
     );
 
-    @Query("""
-        select count(distinct siteActivationLog.sessionId)
-        from SiteActivationLog siteActivationLog
-        where siteActivationLog.site = :site
-          and siteActivationLog.createdAt >= :start
-          and siteActivationLog.createdAt < :end
-          and siteActivationLog.sessionId <> ''
-          and not exists (
-              select 1
-              from SiteActivationLog previousLog
-              where previousLog.site = :site
-                and previousLog.sessionId = siteActivationLog.sessionId
-                and previousLog.createdAt < :start
-          )
-        """)
-    Long countFirstFeatureUsers(
-        @Param("site")
-        Site site,
-        @Param("start")
-        LocalDateTime start,
-        @Param("end")
-        LocalDateTime end
-    );
-
-    @Query("""
-        select siteActivationLog.featureName as name,
-               count(siteActivationLog.id) as count
-        from SiteActivationLog siteActivationLog
-        where siteActivationLog.site = :site
-          and siteActivationLog.createdAt >= :start
-          and siteActivationLog.createdAt < :end
-          and siteActivationLog.featureName is not null
-          and siteActivationLog.featureName <> ''
-        group by siteActivationLog.featureName
-        order by count(siteActivationLog.id) desc
-        """)
-    List<ActivationFeatureCount> countByFeatureName(
-        @Param("site")
-        Site site,
-        @Param("start")
-        LocalDateTime start,
-        @Param("end")
-        LocalDateTime end
-    );
-
-    interface FirstEventUser {
-
-        String getSessionId();
-
-        LocalDateTime getFirstEventAt();
-    }
-
-    interface ActivationFeatureCount {
-
-        String getName();
-
-        Long getCount();
-    }
 }
