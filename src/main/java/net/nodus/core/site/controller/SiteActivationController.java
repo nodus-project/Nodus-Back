@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationNameCountResponse;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.CountResponse;
 import net.nodus.core.site.service.SiteActivationService;
 import net.nodus.global.common.response.ApiPayload;
