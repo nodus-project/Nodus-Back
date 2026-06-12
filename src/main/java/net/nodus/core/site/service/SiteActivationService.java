@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationNameCountResponse;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.CountResponse;
 import net.nodus.database.sdk.SiteActivationLogRepository;
-import net.nodus.database.sdk.SiteRevenueLogRepository;
-import net.nodus.database.sdk.SiteVisitLogRepository;
 import net.nodus.database.site.Site;
 import net.nodus.database.site.SiteAllowedUser;
 import net.nodus.database.site.SiteAllowedUserRepository;
@@ -25,14 +22,14 @@ public class SiteActivationService {
     private final SiteAllowedUserRepository siteAllowedUserRepository;
 
     @Transactional(readOnly = true)
-    public CountResponse findFirstEventUserCount(
+    public CountResponse findFirstFeatureUserCount(
         UUID siteId,
         LocalDateTime start,
         LocalDateTime end,
         UUID userId
     ) {
         Site site = findAllowedSite(siteId, userId);
-        Long count = siteActivationLogRepository.countFirstEventUsers(site, start, end);
+        Long count = siteActivationLogRepository.countFirstFeatureUsers(site, start, end);
 
         return CountResponse.from(count);
     }

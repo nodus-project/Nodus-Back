@@ -42,7 +42,7 @@ public interface SiteActivationLogRepository extends JpaRepository<SiteActivatio
                 and previousLog.createdAt < :start
           )
         """)
-    Long countFirstEventUsers(
+    Long countFirstFeatureUsers(
         @Param("site")
         Site site,
         @Param("start")

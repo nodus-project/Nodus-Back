@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationNameCountResponse;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.CountResponse;
 import net.nodus.core.site.service.SiteActivationService;
 import net.nodus.global.common.response.ApiPayload;
@@ -48,14 +47,14 @@ public class SiteActivationController {
     }
 
     @Operation(summary = "첫 이벤트 사용 유저 개수 조회")
-    @GetMapping("/{siteId}/first-event-users")
-    public ApiPayload<CountResponse> getFirstEventUserCount(
+    @GetMapping("/{siteId}/first-feature-users")
+    public ApiPayload<CountResponse> getFirstFeatureUserCount(
         @PathVariable UUID siteId,
         @RequestParam("start") LocalDate start,
         @RequestParam("end") LocalDate end,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteActivationService.findFirstEventUserCount(
+        var result = siteActivationService.findFirstFeatureUserCount(
             siteId,
             toStartDateTime(start),
             toEndDateTime(end),
@@ -65,14 +64,14 @@ public class SiteActivationController {
     }
 
     @Operation(summary = "기능별 사용자 조회")
-    @GetMapping("/{siteId}/event-users")
+    @GetMapping("/{siteId}/feature-users")
     public ApiPayload<CountResponse> getEventUserCount(
         @PathVariable UUID siteId,
         @RequestParam("start") LocalDate start,
         @RequestParam("end") LocalDate end,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteActivationService.findFirstEventUserCount(
+        var result = siteActivationService.findFirstFeatureUserCount(
             siteId,
             toStartDateTime(start),
             toEndDateTime(end),
