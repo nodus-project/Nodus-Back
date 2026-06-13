@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.nodus.database.common.BaseEntity;
 import net.nodus.database.site.Site;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -41,7 +42,9 @@ public class SiteRevenueLog extends BaseEntity {
     @Column(nullable = false)
     private String sessionId;
 
+    @Comment("매출 태그")
     private String tag;
 
+    @Comment("매출 이벤트 발생 페이지")
     private String currentPage;
 }

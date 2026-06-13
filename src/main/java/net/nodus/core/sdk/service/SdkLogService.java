@@ -3,9 +3,11 @@ package net.nodus.core.sdk.service;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkActivationPostRequest;
 import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkRevenuePostRequest;
+import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkTrafficSourcePostRequest;
 import net.nodus.core.sdk.controller.dto.SdkLogRequest.SdkVisitPostRequest;
 import net.nodus.database.sdk.SiteActivationLog;
 import net.nodus.database.sdk.SiteRevenueLog;
+import net.nodus.database.sdk.SiteTrafficSource;
 import net.nodus.database.sdk.SiteVisitLog;
 import net.nodus.database.site.Site;
 import net.nodus.database.site.SiteRepository;
@@ -65,5 +67,30 @@ public class SdkLogService {
             .build();
 
         site.addRevenueLog(revenueLog);
+    }
+
+    @Transactional
+    public void trafficSourceLog(String key, SdkTrafficSourcePostRequest dto) {
+        Site site = siteRepository.findByKey(key)
+            .orElseThrow(
+                () -> new DataNotFound(DataNotFound.SITE_NOT_FOUND)
+            );
+
+        SiteTrafficSource trafficSource = SiteTrafficSource.builder()
+            .sessionId(dto.sessionId())
+            .channel(dto.channel())
+            .source(dto.source())
+            .medium(dto.medium())
+            .campaign(dto.campaign())
+            .term(dto.term())
+            .content(dto.content())
+            .referrer(dto.referrer())
+            .referrerHost(dto.referrerHost())
+            .landingPage(dto.landingPage())
+            .landingPath(dto.landingPath())
+            .clickId(dto.clickId())
+            .build();
+
+        site.addTrafficSource(trafficSource);
     }
 }

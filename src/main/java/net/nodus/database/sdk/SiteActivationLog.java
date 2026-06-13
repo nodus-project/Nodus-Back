@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.nodus.database.common.BaseEntity;
 import net.nodus.database.site.Site;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -41,8 +42,10 @@ public class SiteActivationLog extends BaseEntity {
     @Column(nullable = false)
     private String sessionId;
 
+    @Comment("기능 이름")
     private String featureName;
 
+    @Comment("이벤트 발생 페이지")
     private String currentPage;
 
 }

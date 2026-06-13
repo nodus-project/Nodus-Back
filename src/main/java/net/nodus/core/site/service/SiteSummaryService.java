@@ -1,10 +1,14 @@
 package net.nodus.core.site.service;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
+import net.nodus.core.site.controller.dto.SiteTrafficSourceResponse.TrafficSourceSummaryResponse;
 import net.nodus.database.sdk.SiteActivationLogRepository;
 import net.nodus.database.sdk.SiteRevenueLogRepository;
+import net.nodus.database.sdk.SiteTrafficSource;
+import net.nodus.database.sdk.SiteTrafficSourceRepository;
 import net.nodus.database.sdk.SiteVisitLogRepository;
 import net.nodus.database.site.Site;
 import net.nodus.database.site.SiteAllowedUser;
@@ -20,6 +24,7 @@ public class SiteSummaryService {
     private final SiteVisitLogRepository siteVisitLogRepository;
     private final SiteActivationLogRepository siteActivationLogRepository;
     private final SiteRevenueLogRepository siteRevenueLogRepository;
+    private final SiteTrafficSourceRepository siteTrafficSourceRepository;
 
     private final SiteAllowedUserRepository siteAllowedUserRepository;
 
@@ -41,6 +46,16 @@ public class SiteSummaryService {
             revenueCount,
             retentionCount
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<TrafficSourceSummaryResponse> findTrafficSourceSummary(
+        UUID siteId,
+        UUID userId
+    ) {
+        Site site = findAllowedSite(siteId, userId);
+        List<SiteTrafficSource> trafficSourceList = siteTrafficSourceRepository.findAllBySite(site);
+        return TrafficSourceSummaryResponse.from(trafficSourceList);
     }
 
     private Site findAllowedSite(UUID siteId, UUID userId) {

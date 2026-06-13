@@ -3,9 +3,11 @@ package net.nodus.core.site.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
+import net.nodus.core.site.controller.dto.SiteTrafficSourceResponse.TrafficSourceSummaryResponse;
 import net.nodus.core.site.service.SiteSummaryService;
 import net.nodus.global.common.response.ApiPayload;
 import net.nodus.global.config.annotation.RoleUser;
@@ -32,6 +34,19 @@ public class SiteSummaryController {
         @RoleUser AuthUserPrincipal user
     ) {
         var result = siteSummaryService.findLogList(
+            siteId,
+            user.id()
+        );
+        return ApiPayload.success(result);
+    }
+
+    @Operation(summary = "유입 경로 목록")
+    @GetMapping("/{siteId}/traffic-sources")
+    public ApiPayload<List<TrafficSourceSummaryResponse>> getTrafficSources(
+        @PathVariable UUID siteId,
+        @RoleUser AuthUserPrincipal user
+    ) {
+        var result = siteSummaryService.findTrafficSourceSummary(
             siteId,
             user.id()
         );
