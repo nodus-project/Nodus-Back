@@ -1,6 +1,6 @@
 package net.nodus.core.site.controller.dto;
 
-public class SiteBaseRequest {
+public class SiteRequest {
 
     public record SiteCreateRequest(
         String name,

@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 import net.nodus.database.common.BaseDeleteEntity;
 import net.nodus.database.sdk.SiteActivationLog;
 import net.nodus.database.sdk.SiteRevenueLog;
+import net.nodus.database.sdk.SiteTrafficSource;
 import net.nodus.database.sdk.SiteVisitLog;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -64,6 +65,15 @@ public class Site extends BaseDeleteEntity {
     public void addAllowedUser(SiteAllowedUser allowedUser) {
         allowedUser.settingSite(this);
         allowedUserList.add(allowedUser);
+    }
+
+    @Builder.Default
+    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SiteTrafficSource> trafficSourceList = new ArrayList<>();
+
+    public void addTrafficSource(SiteTrafficSource trafficSource) {
+        trafficSource.settingSite(this);
+        trafficSourceList.add(trafficSource);
     }
 
     @Builder.Default

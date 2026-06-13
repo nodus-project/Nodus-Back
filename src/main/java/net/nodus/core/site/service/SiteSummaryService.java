@@ -1,14 +1,14 @@
 package net.nodus.core.site.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationNameCountResponse;
 import net.nodus.core.site.controller.dto.SiteActivationResponse.ActivationResponse;
-import net.nodus.core.site.controller.dto.SiteActivationResponse.CountResponse;
+import net.nodus.core.site.controller.dto.SiteTrafficSourceResponse.TrafficSourceSummaryResponse;
 import net.nodus.database.sdk.SiteActivationLogRepository;
 import net.nodus.database.sdk.SiteRevenueLogRepository;
+import net.nodus.database.sdk.SiteTrafficSource;
+import net.nodus.database.sdk.SiteTrafficSourceRepository;
 import net.nodus.database.sdk.SiteVisitLogRepository;
 import net.nodus.database.site.Site;
 import net.nodus.database.site.SiteAllowedUser;
@@ -19,58 +19,43 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SiteActivationService {
+public class SiteSummaryService {
 
     private final SiteVisitLogRepository siteVisitLogRepository;
     private final SiteActivationLogRepository siteActivationLogRepository;
     private final SiteRevenueLogRepository siteRevenueLogRepository;
+    private final SiteTrafficSourceRepository siteTrafficSourceRepository;
+
     private final SiteAllowedUserRepository siteAllowedUserRepository;
 
     @Transactional(readOnly = true)
     public ActivationResponse findLogList(
         UUID siteId,
-        LocalDateTime start,
-        LocalDateTime end,
         UUID userId
     ) {
         Site site = findAllowedSite(siteId, userId);
 
-        Long visitCount = siteVisitLogRepository.countDistinctSessionId(site, start, end);
-        Long activationCount = siteActivationLogRepository.countDistinctSessionId(site, start, end);
-        Long revenueCount = siteRevenueLogRepository.countDistinctSessionId(site, start, end);
+        Long acquisitionCount = siteVisitLogRepository.countDistinctSessionId(site);
+        Long activationCount = siteActivationLogRepository.countDistinctSessionId(site);
+        Long revenueCount = siteRevenueLogRepository.countDistinctSessionId(site);
+        Long retentionCount = siteVisitLogRepository.countRetentionSessionId(site);
 
         return ActivationResponse.from(
+            acquisitionCount,
             activationCount,
-            visitCount,
-            revenueCount
+            revenueCount,
+            retentionCount
         );
     }
 
     @Transactional(readOnly = true)
-    public CountResponse findFirstEventUserCount(
+    public List<TrafficSourceSummaryResponse> findTrafficSourceSummary(
         UUID siteId,
-        LocalDateTime start,
-        LocalDateTime end,
         UUID userId
     ) {
         Site site = findAllowedSite(siteId, userId);
-        Long count = siteActivationLogRepository.countFirstEventUsers(site, start, end);
-
-        return CountResponse.from(count);
-    }
-
-    @Transactional(readOnly = true)
-    public List<ActivationNameCountResponse> findActivationNameCounts(
-        UUID siteId,
-        LocalDateTime start,
-        LocalDateTime end,
-        UUID userId
-    ) {
-        Site site = findAllowedSite(siteId, userId);
-
-        return siteActivationLogRepository.countByFeatureName(site, start, end).stream()
-            .map(ActivationNameCountResponse::from)
-            .toList();
+        List<SiteTrafficSource> trafficSourceList = siteTrafficSourceRepository.findAllBySite(site);
+        return TrafficSourceSummaryResponse.from(trafficSourceList);
     }
 
     private Site findAllowedSite(UUID siteId, UUID userId) {
@@ -82,4 +67,5 @@ public class SiteActivationService {
 
         return allowedSite.getSite();
     }
+
 }

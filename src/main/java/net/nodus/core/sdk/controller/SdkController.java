@@ -21,6 +21,16 @@ public class SdkController {
 
     private final SdkLogService sdkLogService;
 
+    @Operation(summary = "트래픽 소스 로그")
+    @PostMapping("/traffic-source")
+    public ApiPayload<Void> trafficSource(
+        @RequestParam String key,
+        @Valid @RequestBody SdkLogRequest.SdkTrafficSourcePostRequest dto
+    ) {
+        sdkLogService.trafficSourceLog(key, dto);
+        return ApiPayload.success();
+    }
+
     @Operation(summary = "사이트 접속 로그")
     @PostMapping("/visit")
     public ApiPayload<Void> visit(
