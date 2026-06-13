@@ -7,10 +7,10 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import net.nodus.core.site.controller.dto.SiteRequest;
-import net.nodus.core.site.controller.dto.SiteRequest.UpdateSiteRequest;
-import net.nodus.core.site.controller.dto.SiteResponse.SiteOneResponse;
-import net.nodus.core.site.service.SiteService;
+import net.nodus.core.site.controller.dto.SiteBaseRequest;
+import net.nodus.core.site.controller.dto.SiteBaseRequest.UpdateSiteRequest;
+import net.nodus.core.site.controller.dto.SiteBaseResponse.SiteOneResponse;
+import net.nodus.core.site.service.SiteBaseService;
 import net.nodus.global.common.response.ApiPayload;
 import net.nodus.global.config.annotation.RoleUser;
 import net.nodus.security.AuthUserPrincipal;
@@ -28,17 +28,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sites")
 @SecurityRequirement(name = "bearerToken")
 @RequiredArgsConstructor
-public class SiteController {
+public class SiteBaseController {
 
-    private final SiteService siteService;
+    private final SiteBaseService siteBaseService;
 
     @Operation(summary = "사이트 생성")
     @PostMapping
     public ApiPayload<SiteOneResponse> create(
-        @Valid @RequestBody SiteRequest.SiteCreateRequest dto,
+        @Valid @RequestBody SiteBaseRequest.SiteCreateRequest dto,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteService.create(dto, user.id());
+        var result = siteBaseService.create(dto, user.id());
         return ApiPayload.success(result);
     }
 
@@ -47,7 +47,7 @@ public class SiteController {
     public ApiPayload<List<SiteOneResponse>> findAll(
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteService.getSiteList(user.id());
+        var result = siteBaseService.getSiteList(user.id());
         return ApiPayload.success(result);
     }
 
@@ -57,7 +57,7 @@ public class SiteController {
         @PathVariable UUID siteId,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteService.getSite(siteId, user.id());
+        var result = siteBaseService.getSite(siteId, user.id());
         return ApiPayload.success(result);
     }
 
@@ -65,10 +65,10 @@ public class SiteController {
     @PatchMapping("/{siteId}")
     public ApiPayload<SiteOneResponse> update(
         @PathVariable UUID siteId,
-        @RequestBody UpdateSiteRequest dto,
+        @RequestBody @Valid UpdateSiteRequest dto,
         @RoleUser AuthUserPrincipal user
     ) {
-        var result = siteService.updateSite(siteId, dto, user.id());
+        var result = siteBaseService.updateSite(siteId, dto, user.id());
         return ApiPayload.success(result);
     }
 
@@ -78,7 +78,7 @@ public class SiteController {
         @PathVariable UUID siteId,
         @RoleUser AuthUserPrincipal user
     ) {
-        siteService.deleteSite(siteId, user.id());
+        siteBaseService.deleteSite(siteId, user.id());
         return ApiPayload.success();
     }
 }
