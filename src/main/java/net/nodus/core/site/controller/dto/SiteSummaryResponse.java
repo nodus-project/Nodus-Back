@@ -6,7 +6,30 @@ import lombok.Builder;
 import net.nodus.database.sdk.SiteTrafficSource;
 import org.springframework.util.StringUtils;
 
-public class SiteTrafficSourceResponse {
+public class SiteSummaryResponse {
+
+    @Builder
+    public record ActivationResponse(
+        Long acquisitionCount,
+        Long activationCount,
+        Long revenueCount,
+        Long retentionCount
+    ) {
+
+        public static ActivationResponse from(
+            Long acquisitionCount,
+            Long activationCount,
+            Long revenueCount,
+            Long retentionCount
+        ) {
+            return ActivationResponse.builder()
+                .acquisitionCount(acquisitionCount)
+                .activationCount(activationCount)
+                .revenueCount(revenueCount)
+                .retentionCount(retentionCount)
+                .build();
+        }
+    }
 
     @Builder
     public record TrafficSourceSummaryResponse(
